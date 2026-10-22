@@ -34,6 +34,6 @@ jobs:
       - uses: actions/upload-artifact@v4
         id: unsigned
         with:
-          name: BookTrigger-v11.1-unsigned
+          name: BookTrigger-v11.2-unsigned
           path: dist/*
           if-no-files-found: error

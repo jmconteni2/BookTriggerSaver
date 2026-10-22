@@ -1,4 +1,4 @@
-param([string]$Output = "dist/BookTriggerSaver_v11_1.exe")
+param([string]$Output = "dist/BookTriggerSaver_v11_2.exe")
 $ErrorActionPreference = "Stop"
 Push-Location $PSScriptRoot
 try {

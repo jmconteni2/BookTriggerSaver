@@ -9,3 +9,5 @@ El catálogo y las imágenes se conservan en `%APPDATA%\JMPocketSalvapantallas`.
 El instalador guarda la configuración anterior del salvapantallas y configura su selección, activación y tiempo de inactividad para el usuario actual. La desinstalación restaura los ajustes anteriores cuando corresponde y conserva la caché. No se modifica la protección por contraseña de Windows.
 
 Las conexiones forman parte de la función anunciada de sincronizar la biblioteca; no se escribe en Google Sheets. El backend de Google Apps Script y los servidores de imágenes son servicios externos. El proyecto no afirma controlar sus políticas de privacidad ni el tratamiento que realizan esos proveedores.
+
+La revisión 11.2 registra localmente las fases de apertura de compra en `apertura.log`, con versión, hora, identificadores de proceso, dominio e identificador hash del enlace, sin URL completa ni parámetros. Este registro no se envía y se reinicia al superar 256 KiB.

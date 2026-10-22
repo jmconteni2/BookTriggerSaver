@@ -357,7 +357,7 @@ func registerUninstaller(path string) error {
 	}
 	defer syscall.RegCloseKey(h)
 	for n, v := range map[string]string{
-		"DisplayName": "BookTrigger — Salvapantallas", "DisplayVersion": "11.0.0",
+		"DisplayName": "BookTrigger — Salvapantallas", "DisplayVersion": "11.0.2",
 		"Publisher": "J.M. Contenidos", "DisplayIcon": path,
 		"InstallLocation": filepath.Dir(path), "UninstallString": `"` + path + `" --uninstall`,
 	} {
@@ -607,6 +607,15 @@ func uninstall() error {
 }
 func main() {
 	runtime.LockOSThread()
+	if len(os.Args) > 1 && os.Args[1] == "--open-purchase" {
+		if err := runPurchaseHelper(os.Args[1:]); err != nil {
+			logError(err)
+			if normalDesktopActive() {
+				message("No se pudo completar la apertura del libro.\n\n"+err.Error()+"\n\nEl detalle está en apertura.log dentro de la carpeta de BookTrigger.", 0x10)
+			}
+		}
+		return
+	}
 	mode, parent := parseMode(os.Args[1:], strings.EqualFold(filepath.Ext(os.Args[0]), ".scr"))
 	var err error
 	switch mode {

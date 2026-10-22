@@ -106,6 +106,9 @@ func saverWndProc(hwnd uintptr, msg uint32, wParam, lParam uintptr) uintptr {
 			return 0
 		}
 		exit, open := keyAction(uint32(wParam), s.Preview)
+		if open {
+			purchaseTrace("enter", fmt.Sprintf("preview=%t target_valid=%t", s.Preview, webURL(s.VisibleLink)))
+		}
 		if open && webURL(s.VisibleLink) {
 			s.PurchaseLink = s.VisibleLink
 		}
@@ -249,7 +252,7 @@ func runSaver(root string, preview bool, parent uintptr) error {
 		return state.PaintError
 	}
 	if webURL(state.PurchaseLink) {
-		if err := openPurchase(state.PurchaseLink); err != nil {
+		if err := handoffPurchase(state.PurchaseLink); err != nil {
 			user32.NewProc("MessageBoxW").Call(0, ptr(err.Error()), ptr("BookTrigger — No se pudo abrir la compra"), 0x10)
 			return err
 		}
