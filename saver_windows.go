@@ -82,7 +82,9 @@ func saverWndProc(hwnd uintptr, msg uint32, wParam, lParam uintptr) uintptr {
 			if rect.Right > 0 && rect.Bottom > 0 {
 				s.Scene.resize(int(rect.Right), int(rect.Bottom))
 				link, e := s.Graphics.paint(dc, s.Scene, time.Now(), s.Status, filepath.Join(s.Root, "logo.png"), filepath.Join(s.Root, "glow.png"))
-				s.VisibleLink = link
+				if link != "" {
+					s.VisibleLink = link
+				}
 				if e != nil {
 					s.PaintError = e
 					user32.NewProc("PostMessageW").Call(hwnd, 0x10, 0, 0)
@@ -99,6 +101,10 @@ func saverWndProc(hwnd uintptr, msg uint32, wParam, lParam uintptr) uintptr {
 		user32.NewProc("InvalidateRect").Call(hwnd, 0, 0)
 		return 0
 	case 0x0100, 0x0104:
+		// Ignore auto-repeat from the Enter used to start a preview/run.
+		if wParam == 13 && lParam&(1<<30) != 0 {
+			return 0
+		}
 		exit, open := keyAction(uint32(wParam), s.Preview)
 		if open && webURL(s.VisibleLink) {
 			s.PurchaseLink = s.VisibleLink
@@ -113,6 +119,10 @@ func saverWndProc(hwnd uintptr, msg uint32, wParam, lParam uintptr) uintptr {
 			return 0
 		}
 	case 0x0200:
+		if !s.Preview && time.Since(s.Started) <= 700*time.Millisecond {
+			user32.NewProc("GetCursorPos").Call(uintptr(unsafe.Pointer(&s.Mouse)))
+			return 0
+		}
 		if !s.Preview && time.Since(s.Started) > 700*time.Millisecond {
 			var p winPoint
 			if r, _, _ := user32.NewProc("GetCursorPos").Call(uintptr(unsafe.Pointer(&p))); r != 0 {
@@ -239,10 +249,9 @@ func runSaver(root string, preview bool, parent uintptr) error {
 		return state.PaintError
 	}
 	if webURL(state.PurchaseLink) {
-		shell := syscall.NewLazyDLL("shell32.dll")
-		r, _, _ := shell.NewProc("ShellExecuteW").Call(0, ptr("open"), ptr(state.PurchaseLink), 0, 0, 1)
-		if r <= 32 {
-			return fmt.Errorf("Windows no pudo abrir el enlace de compra (%d)", r)
+		if err := openPurchase(state.PurchaseLink); err != nil {
+			user32.NewProc("MessageBoxW").Call(0, ptr(err.Error()), ptr("BookTrigger — No se pudo abrir la compra"), 0x10)
+			return err
 		}
 	}
 	return nil

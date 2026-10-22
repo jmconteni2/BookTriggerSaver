@@ -48,7 +48,10 @@ func TestNativeGraphicsOffscreen(t *testing.T) {
 			t.Fatal(e)
 		}
 		b, _ := scene.current()
-		if link != b.Link {
+		if elapsed == 0 && link != "" {
+			t.Fatal("invisible cover exposed a purchase link")
+		}
+		if elapsed > 0 && link != b.Link {
 			t.Fatalf("rendered book/link mismatch: %q != %q", link, b.Link)
 		}
 		p := panelLayout(scene.W, scene.H, scene.Cycle)
@@ -56,5 +59,42 @@ func TestNativeGraphicsOffscreen(t *testing.T) {
 		if uint32(pixel) != 0x23140b {
 			t.Fatalf("panel interior: %#x", pixel)
 		}
+	}
+}
+
+func TestPurchaseNativeStructureAndInvalidLink(t *testing.T) {
+	if unsafe.Sizeof(shellExecuteInfo{}) != 112 {
+		t.Fatal("invalid SHELLEXECUTEINFOW layout")
+	}
+	if unsafe.Offsetof(shellExecuteInfo{}.Instance) != 56 || unsafe.Offsetof(shellExecuteInfo{}.Process) != 104 {
+		t.Fatal("invalid shell offsets")
+	}
+	if openPurchase("file:///test") == nil {
+		t.Fatal("non-web purchase URL accepted")
+	}
+}
+
+func TestNativeEnterUsesPresentedLinkOnce(t *testing.T) {
+	old := activeSaver
+	defer func() { activeSaver = old }()
+	s := &saverWindow{VisibleLink: "https://example.test/presented"}
+	activeSaver = s
+	saverWndProc(0, 0x0100, 13, 1<<30)
+	if s.PurchaseLink != "" {
+		t.Fatal("held Enter triggered purchase")
+	}
+	saverWndProc(0, 0x0100, 13, 0)
+	if s.PurchaseLink != s.VisibleLink {
+		t.Fatal("Enter did not capture the presented link")
+	}
+	s.PurchaseLink = ""
+	saverWndProc(0, 0x0100, 65, 0)
+	if s.PurchaseLink != "" {
+		t.Fatal("other key triggered purchase")
+	}
+	s.Preview = true
+	saverWndProc(0, 0x0100, 13, 0)
+	if s.PurchaseLink != "" {
+		t.Fatal("preview triggered purchase")
 	}
 }

@@ -67,3 +67,5 @@ El código nuevo tiene licencia MIT. Los recursos y las dependencias se describe
 ## Corrección v11.1
 
 La carga inicial espera un primer grupo de hasta ocho portadas antes de mostrar resultados parciales. El cambio de destacado conserva la distribución del mosaico y las actualizaciones del catálogo conservan la identidad de cada portada aunque cambie el orden de descarga. Esta revisión necesita validación visual en el equipo donde se detectó el fallo.
+
+La apertura de compra usa ShellExecuteExW con inicialización COM y espera de activación antes de terminar. Intro conserva el enlace de la última portada dibujada correctamente, ignora la repetición de una tecla Intro mantenida al arrancar y muestra el error de Windows si no puede abrir el navegador.

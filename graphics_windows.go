@@ -305,10 +305,9 @@ func (r *saverGraphics) paint(dc uintptr, scene *Scene, now time.Time, status, l
 		fillRect(g, rect.grow(3), alphaColor(0xff0d61f1, a))
 		fillRect(g, rect.grow(1), alphaColor(0xff71c7ff, a))
 		cover := r.cache.get(book.Path)
-		if cover != nil {
+		if drawImage(g, cover, rect, a) {
 			link = book.Link
 		}
-		drawImage(g, cover, rect, a)
 	}
 	p := panelLayout(scene.W, scene.H, scene.Cycle)
 	for _, v := range []struct {
