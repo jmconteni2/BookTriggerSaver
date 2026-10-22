@@ -1,0 +1,39 @@
+name: Build and test BookTrigger
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  portable-tests:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          persist-credentials: false
+      - uses: actions/setup-go@v6
+        with:
+          go-version: '1.27.3'
+          cache: false
+      - run: go test -race -count=1 ./...
+  windows-build:
+    runs-on: windows-latest
+    needs: portable-tests
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          persist-credentials: false
+      - uses: actions/setup-go@v6
+        with:
+          go-version: '1.27.3'
+          cache: false
+      - name: Native Windows tests and build from source
+        shell: pwsh
+        run: ./Build.ps1
+      - uses: actions/upload-artifact@v4
+        id: unsigned
+        with:
+          name: BookTrigger-v11-unsigned
+          path: dist/*
+          if-no-files-found: error

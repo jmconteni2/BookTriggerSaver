@@ -1,0 +1,7 @@
+/dist/
+*.exe
+*.scr
+*.dll
+*.syso
+*.test
+__pycache__/

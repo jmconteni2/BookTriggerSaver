@@ -1,0 +1,30 @@
+=== RUN   TestCatalogKeepsPairsAndRejectsInvalidEntries
+--- PASS: TestCatalogKeepsPairsAndRejectsInvalidEntries (0.02s)
+=== RUN   TestNetworkDownloadCacheAndOfflineRecovery
+--- PASS: TestNetworkDownloadCacheAndOfflineRecovery (0.02s)
+=== RUN   TestMalformedImagesAndOversizedResponsesDoNotEnterCache
+--- PASS: TestMalformedImagesAndOversizedResponsesDoNotEnterCache (0.00s)
+=== RUN   TestCancelledDownloadsReturnAndCachePathsCannotEscape
+--- PASS: TestCancelledDownloadsReturnAndCachePathsCannotEscape (0.00s)
+=== RUN   TestScreenSaverInvocation
+--- PASS: TestScreenSaverInvocation (0.00s)
+=== RUN   TestVisualReference
+--- PASS: TestVisualReference (0.01s)
+=== RUN   TestMosaicReference
+--- PASS: TestMosaicReference (0.04s)
+=== RUN   TestPanelContainedAndMovesAsOne
+--- PASS: TestPanelContainedAndMovesAsOne (0.00s)
+=== RUN   TestFadeCurveAndDeadline
+--- PASS: TestFadeCurveAndDeadline (0.00s)
+=== RUN   TestCatalogUpdateDoesNotInterruptFeaturedBook
+--- PASS: TestCatalogUpdateDoesNotInterruptFeaturedBook (0.00s)
+=== RUN   TestSelectedCoverAndURLStayPairedAndDoNotRepeat
+--- PASS: TestSelectedCoverAndURLStayPairedAndDoNotRepeat (0.01s)
+=== RUN   TestOnlyPurchasableBooksCanBeHighlighted
+--- PASS: TestOnlyPurchasableBooksCanBeHighlighted (0.00s)
+=== RUN   TestKeyboardAndPreview
+--- PASS: TestKeyboardAndPreview (0.00s)
+=== RUN   TestWelcomePosterFitsUsableScreen
+--- PASS: TestWelcomePosterFitsUsableScreen (0.00s)
+PASS
+ok  	booktrigger/saver	1.148s

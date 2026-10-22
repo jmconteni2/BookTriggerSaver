@@ -1,0 +1,7 @@
+{
+  "compiler": "go version go1.27.3 linux/amd64",
+  "source_only_build": true,
+  "identical_clean_build": true,
+  "delivered_sha256": "988f753604726823216fdd36d6cd263dffbdf80e7d02ca28598ea0d7ef68c43a",
+  "clean_build_sha256": "988f753604726823216fdd36d6cd263dffbdf80e7d02ca28598ea0d7ef68c43a"
+}
