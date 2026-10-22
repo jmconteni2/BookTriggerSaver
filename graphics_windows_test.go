@@ -63,11 +63,8 @@ func TestNativeGraphicsOffscreen(t *testing.T) {
 }
 
 func TestPurchaseNativeStructureAndInvalidLink(t *testing.T) {
-	if unsafe.Sizeof(shellExecuteInfo{}) != 112 {
-		t.Fatal("invalid SHELLEXECUTEINFOW layout")
-	}
-	if unsafe.Offsetof(shellExecuteInfo{}.Instance) != 56 || unsafe.Offsetof(shellExecuteInfo{}.Process) != 104 {
-		t.Fatal("invalid shell offsets")
+	if unsafe.Sizeof(automationVariant{}) != 24 || unsafe.Sizeof(automationParams{}) != 24 {
+		t.Fatal("incorrect x64 automation ABI")
 	}
 	if openPurchase("file:///test") == nil {
 		t.Fatal("non-web purchase URL accepted")

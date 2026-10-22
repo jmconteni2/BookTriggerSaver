@@ -6,7 +6,7 @@ No se utiliza `original_v9.exe`, `engine.scr`, un parche binario, el adaptador `
 
 ## Instalar
 
-Ejecuta `BookTriggerSaver_v11_4.exe`, elige los minutos de inactividad y pulsa **Instalar y activar**. La pantalla final mantiene el cartel original y el botón **Ejecutar ahora**. La actualización se puede instalar sobre v10.3 con el salvapantallas cerrado.
+Ejecuta `BookTriggerSaver_v11_5.exe`, elige los minutos de inactividad y pulsa **Instalar y activar**. La pantalla final mantiene el cartel original y el botón **Ejecutar ahora**. La actualización se puede instalar sobre v10.3 con el salvapantallas cerrado.
 
 - Tiempo de espera: 1, 2, 3, 5, 10, 15 o 30 minutos.
 - Cada libro destacado permanece seleccionado durante 15 segundos, incluidos los fundidos de entrada y salida de medio segundo.
@@ -26,7 +26,7 @@ Instala Go 1.27.3 para reproducir la versión entregada y ejecuta:
 ./Build.ps1
 ```
 
-El script ejecuta las pruebas, genera los recursos desde `winres/winres.json` y el icono, y compila `dist/BookTriggerSaver_v11_4.exe`. La primera generación de recursos descarga la herramienta abierta `go-winres` 0.3.3. No requiere comprar herramientas ni certificados. La aplicación terminada no necesita Go instalado.
+El script ejecuta las pruebas, genera los recursos desde `winres/winres.json` y el icono, y compila `dist/BookTriggerSaver_v11_5.exe`. La primera generación de recursos descarga la herramienta abierta `go-winres` 0.3.3. No requiere comprar herramientas ni certificados. La aplicación terminada no necesita Go instalado.
 
 `go.mod` fija Go 1.24 como versión mínima del lenguaje. La versión del compilador de cada compilación queda registrada junto al ejecutable.
 
@@ -83,3 +83,13 @@ Incluye el logo BookTrigger suministrado, sin modificar sus bytes, centrado deba
 ## Diseño v11.4
 
 Estantería oscura adaptable dibujada por el motor, portadas apoyadas en las baldas y sombras suaves. El destacado se amplía manteniendo su base en el estante. Enredaderas decorativas transparentes acompañan a la caja móvil y dejan libre su centro; se omiten en la miniatura diminuta del panel de Windows. El logo BookTrigger permanece debajo de la caja. No cambia la apertura de compra de v11.3 ni se considera resuelto el bloqueo de pantalla verde.
+
+## Revisión v11.5
+
+Se sustituye el logo inferior por el wordmark de BookTrigger suministrado. El mosaico cubre todas las baldas también detrás de la caja: ya no se eliminan portadas por la región rectangular de la decoración, y mover la caja no cambia su distribución.
+
+La apertura de compra usa ahora la automatización del escritorio del Explorador que ya está ejecutándose. Se retiran el proceso auxiliar, la espera del escritorio y la apertura directa desde el contexto del salvapantallas. La URL se entrega una sola vez como cadena Unicode, sin consola ni reescrituras. Se limita la llamada a tres segundos y se cancela la llamada COM pendiente si vence; no hay reintento automático. No se cambia el bloqueo de Windows ni la contraseña.
+
+Las fases nuevas de `apertura.log` son `explorer_request`, `explorer_accepted`, `explorer_error` y `explorer_timeout`. La prueba nativa delega al Explorador el lanzamiento de un programa de prueba inocuo y verifica su escritorio y argumentos; se omite con aviso si el runner carece de Explorador interactivo. Sigue siendo necesaria la validación manual en el equipo donde se comunicó la pantalla verde.
+
+Referencia del mecanismo: https://devblogs.microsoft.com/oldnewthing/20131118-00/?p=2643/ y https://learn.microsoft.com/en-us/windows/win32/api/exdisp/nf-exdisp-ishellwindows-findwindowsw

@@ -3,6 +3,7 @@ package main
 import (
 	"math"
 	"math/rand"
+	"slices"
 	"time"
 )
 
@@ -66,7 +67,7 @@ func panelLayout(w, h int, cycle int64) Panel {
 	return Panel{Box{x, y, pw, ph}, r, logo, Box{x + pw/2 - int(float64(pw)*.05), y + int(float64(ph)*.52), int(float64(pw) * .1), 1}, clock, clamp(int(math.Min(float64(pw)*.18, float64(ph)*.34)), 10, 88), footer, clamp(int(float64(w)*.009), 10, 14)}
 }
 
-// Keep the supplied 1419x571 logo below the clock panel, anchored to it.
+// Keep the supplied 931x99 wordmark below the clock panel, anchored to it.
 func booktriggerLogoBox(w, h int, cycle int64) Box {
 	return logoBelowPanel(h, panelLayout(w, h, cycle).Box)
 }
@@ -76,8 +77,8 @@ func logoBelowPanel(h int, p Box) Box {
 	if available < 12 {
 		return Box{}
 	}
-	width := min(p.W*65/100, 1419*min(available, p.H/3)/571)
-	height := width * 571 / 1419
+	width := min(p.W*78/100, 931*min(available, p.H/3)/99)
+	height := width * 99 / 931
 	if width < 1 || height < 1 {
 		return Box{}
 	}
@@ -117,15 +118,11 @@ func coverSlots(w, h int, preview bool, panel Box) []Box {
 	grid := shelfGeometry(w, h, preview)
 	width := min(grid.CellW*.75, grid.CellH*.76/1.46)
 	height := width * 1.46
-	margin := clamp(w/100, 8, 24)
-	reserved := panel.grow(margin)
-	brand := logoBelowPanel(h, panel)
-	plants := plantsAroundPanel(w, h, panel)
 	var out []Box
 	for _, baseline := range shelfBaselines(w, h, preview) {
 		for col := 0; col < grid.Columns; col++ {
 			r := Box{int(float64(col)*grid.CellW + (grid.CellW-width)/2), baseline - int(height), int(width), int(height)}
-			if r.W > 0 && r.H > 0 && !r.intersects(reserved) && (brand.W == 0 || !r.intersects(brand.grow(6))) && (plants.W == 0 || !r.intersects(plants.grow(6))) {
+			if r.W > 0 && r.H > 0 {
 				out = append(out, r)
 			}
 		}
@@ -192,8 +189,11 @@ func newScene(w, h int, preview bool, seed int64, now time.Time) *Scene {
 	return s
 }
 func (s *Scene) relayout() {
-	s.Slots = coverSlots(s.W, s.H, s.Preview, panelLayout(s.W, s.H, s.Cycle).Box)
-	s.Assignment = nil
+	slots := coverSlots(s.W, s.H, s.Preview, panelLayout(s.W, s.H, s.Cycle).Box)
+	if !slices.Equal(s.Slots, slots) {
+		s.Assignment = nil
+	}
+	s.Slots = slots
 	s.Version++
 }
 func (s *Scene) resize(w, h int) {

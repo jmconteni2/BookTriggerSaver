@@ -60,12 +60,10 @@ func TestVisualReference(t *testing.T) {
 		}
 	}
 }
-func TestShelfAlignmentAndDecorationClearance(t *testing.T) {
+func TestShelfAlignmentWithoutCutout(t *testing.T) {
 	for _, size := range [][2]int{{1920, 1080}, {3840, 2160}, {1366, 768}, {800, 600}, {320, 240}, {200, 120}} {
 		for cycle := int64(0); cycle < 10; cycle += 2 {
 			p := panelLayout(size[0], size[1], cycle).Box
-			plants := plantsAroundPanel(size[0], size[1], p)
-			brand := logoBelowPanel(size[1], p)
 			slots := coverSlots(size[0], size[1], size[0] < 340, p)
 			if len(slots) == 0 {
 				t.Fatalf("no books at %v cycle%d", size, cycle)
@@ -83,9 +81,6 @@ func TestShelfAlignmentAndDecorationClearance(t *testing.T) {
 				}
 				if r.X < 0 || r.Y < 0 || r.right() > size[0] || r.bottom() > size[1] {
 					t.Fatalf("book outside screen: %+v", r)
-				}
-				if r.intersects(p.grow(clamp(size[0]/100, 8, 24))) || (plants.W > 0 && r.intersects(plants.grow(6))) || (brand.W > 0 && r.intersects(brand.grow(6))) {
-					t.Fatal("book overlaps clock or decorations")
 				}
 				if enlarged(r).bottom() != r.bottom() {
 					t.Fatal("featured book left shelf")
@@ -250,7 +245,7 @@ func TestHighlightKeepsBackgroundAndDownloadOrder(t *testing.T) {
 	}
 }
 
-func TestBookTriggerLogoTracksPanelAndAvoidsCovers(t *testing.T) {
+func TestBookTriggerLogoTracksPanel(t *testing.T) {
 	for _, size := range [][2]int{{1920, 1080}, {1366, 768}, {800, 600}, {3840, 2160}} {
 		for cycle := int64(0); cycle < 10; cycle++ {
 			p := panelLayout(size[0], size[1], cycle).Box
@@ -261,11 +256,22 @@ func TestBookTriggerLogoTracksPanelAndAvoidsCovers(t *testing.T) {
 			if abs := logo.X + logo.W/2 - (p.X + p.W/2); abs < -1 || abs > 1 {
 				t.Fatal("logo not centered")
 			}
-			for _, slot := range coverSlots(size[0], size[1], false, p) {
-				if slot.intersects(logo.grow(4)) {
-					t.Fatal("cover overlaps brand")
-				}
-			}
+		}
+	}
+}
+
+func TestClockMovementKeepsEveryShelfBook(t *testing.T) {
+	now := time.Now()
+	s := newScene(1920, 1080, false, 42, now)
+	s.queue(fixtureBooks(), now)
+	slots := append([]Box(nil), s.Slots...)
+	assigned := append([]int(nil), s.Assignment...)
+	for cycle := int64(2); cycle <= 8; cycle += 2 {
+		s.Cycle = cycle
+		s.relayout()
+		s.assign(true)
+		if !reflect.DeepEqual(slots, s.Slots) || !reflect.DeepEqual(assigned, s.Assignment) {
+			t.Fatal("clock movement removed or shuffled shelf books")
 		}
 	}
 }

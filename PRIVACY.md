@@ -11,3 +11,5 @@ El instalador guarda la configuración anterior del salvapantallas y configura s
 Las conexiones forman parte de la función anunciada de sincronizar la biblioteca; no se escribe en Google Sheets. El backend de Google Apps Script y los servidores de imágenes son servicios externos. El proyecto no afirma controlar sus políticas de privacidad ni el tratamiento que realizan esos proveedores.
 
 La revisión 11.2 registra localmente las fases de apertura de compra en `apertura.log`, con versión, hora, identificadores de proceso, dominio e identificador hash del enlace, sin URL completa ni parámetros. Este registro no se envía y se reinicia al superar 256 KiB.
+
+Desde v11.5 no se inicia ningún auxiliar para abrir la compra ni se añade ningún proceso residente. Se delega la apertura al Explorador de Windows existente. Las fases se registran localmente como `explorer_*`, con el mismo dominio e identificador hash y sin enviar el registro.

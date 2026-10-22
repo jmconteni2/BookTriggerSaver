@@ -252,10 +252,7 @@ func runSaver(root string, preview bool, parent uintptr) error {
 		return state.PaintError
 	}
 	if webURL(state.PurchaseLink) {
-		if err := handoffPurchase(state.PurchaseLink); err != nil {
-			user32.NewProc("MessageBoxW").Call(0, ptr(err.Error()), ptr("BookTrigger — No se pudo abrir la compra"), 0x10)
-			return err
-		}
+		return openPurchase(state.PurchaseLink)
 	}
 	return nil
 }
