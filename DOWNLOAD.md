@@ -15,4 +15,4 @@ La instalación y desinstalación se explican en [README](README.md). Consulta t
 
 ## Code signing policy
 
-[Política de firma](SIGNPATH.md). La solicitud al programa gratuito de SignPath Foundation está en preparación; **no está enviada ni aprobada y este archivo no está firmado por SignPath**. Si el proyecto es aceptado, se publicarán aquí los créditos y la descarga firmada.
+[Política de firma](SIGNPATH.md). La solicitud al programa gratuito de SignPath Foundation se envió el 22 de octubre de 2026 y el formulario confirmó su recepción. **Está pendiente de evaluación y este archivo no está firmado por SignPath**. Si el proyecto es aceptado, se publicarán aquí los créditos y la descarga firmada.

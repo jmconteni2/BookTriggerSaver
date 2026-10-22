@@ -2,7 +2,7 @@
 
 ## Estado
 
-Solicitud al programa gratuito de SignPath Foundation **en preparación, no enviada ni aprobada**. BookTriggerSaver v11.5 se distribuye sin firma Authenticode. No existe actualmente patrocinio, certificado configurado ni integración de firma activada.
+Solicitud al programa gratuito de SignPath Foundation **enviada el 22 de octubre de 2026; pendiente de evaluación**. El formulario mostró «Form submitted. Thank you, we'll be in touch soon». Esto confirma la recepción, no la aceptación del proyecto. BookTriggerSaver v11.5 se distribuye sin firma Authenticode. No existe actualmente patrocinio, certificado configurado ni integración de firma activada.
 
 ## Responsabilidades
 

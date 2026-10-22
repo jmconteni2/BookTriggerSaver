@@ -4,7 +4,7 @@ Salvapantallas gratuito y de código abierto para Windows x64 de J.M. Pocket. Mu
 
 ## Descargar e instalar
 
-Consulta [Descarga v11.5](DOWNLOAD.md). El instalador actual está **sin firma Authenticode**; la solicitud a SignPath está en preparación, todavía no enviada ni aprobada.
+Consulta [Descarga v11.5](DOWNLOAD.md). El instalador actual está **sin firma Authenticode**; la solicitud a SignPath se envió el 22 de octubre de 2026 y está pendiente de evaluación.
 
 Ejecuta `BookTriggerSaver_v11_5.exe`, elige el tiempo de inactividad y pulsa **Instalar y activar**. El botón **Ejecutar ahora** permite probarlo al terminar. La instalación configura el salvapantallas del usuario actual sin permisos de administrador.
 
