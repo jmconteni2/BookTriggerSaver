@@ -28,7 +28,7 @@ func TestNativeGraphicsOffscreen(t *testing.T) {
 	}
 	defer user32.NewProc("ReleaseDC").Call(0, dc)
 	dir := t.TempDir()
-	for name, data := range map[string][]byte{"logo.png": logo, "glow.png": glow, "book.png": pngSample()} {
+	for name, data := range map[string][]byte{"logo.png": logo, "booktrigger.png": booktriggerLogo, "glow.png": glow, "book.png": pngSample()} {
 		if e := os.WriteFile(filepath.Join(dir, name), data, 0600); e != nil {
 			t.Fatal(e)
 		}

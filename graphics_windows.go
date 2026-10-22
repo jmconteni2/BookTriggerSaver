@@ -5,6 +5,7 @@ package main
 import (
 	"fmt"
 	"math"
+	"path/filepath"
 	"runtime"
 	"syscall"
 	"time"
@@ -317,6 +318,8 @@ func (r *saverGraphics) paint(dc uintptr, scene *Scene, now time.Time, status, l
 		roundRect(g, p.Box.grow(v.Expand), v.Radius, v.Color)
 	}
 	drawImage(g, r.cache.get(logoPath), p.Logo, 1)
+	brand := booktriggerLogoBox(scene.W, scene.H, scene.Cycle)
+	drawImage(g, r.cache.get(filepath.Join(filepath.Dir(logoPath), "booktrigger.png")), brand, 1)
 	fillRect(g, p.Separator, 0xff526b91)
 	gp("GdipDeleteGraphics", g) // Flush GDI+ before drawing text on the same HDC.
 	r.text(r.front.DC, now.Format("15:04"), p.Clock, p.ClockSize, 300, 0xf7f0eb)

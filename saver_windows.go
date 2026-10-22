@@ -163,7 +163,7 @@ func runSaver(root string, preview bool, parent uintptr) error {
 	if e := os.MkdirAll(root, 0700); e != nil {
 		return e
 	}
-	for name, data := range map[string][]byte{"logo.png": logo, "glow.png": glow} {
+	for name, data := range map[string][]byte{"logo.png": logo, "booktrigger.png": booktriggerLogo, "glow.png": glow} {
 		if e := atomicWrite(filepath.Join(root, name), data); e != nil {
 			return e
 		}

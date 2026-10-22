@@ -75,6 +75,17 @@ func TestMosaicReference(t *testing.T) {
 		t.Fatal(e)
 	}
 	for _, row := range rows {
+		// Original mosaic geometry, excluding the newly added brand area.
+		brand := booktriggerLogoBox(row.W, row.H, row.Cycle)
+		if brand.W > 0 {
+			filtered := make([][]int, 0, len(row.Slots))
+			for _, r := range row.Slots {
+				if !(Box{r[0], r[1], r[2], r[3]}).intersects(brand.grow(4)) {
+					filtered = append(filtered, r)
+				}
+			}
+			row.Slots = filtered
+		}
 		got := coverSlots(row.W, row.H, row.Preview, panelLayout(row.W, row.H, row.Cycle).Box)
 		if len(got) != len(row.Slots) {
 			t.Errorf("%dx%d cycle%d: %d slots != %d", row.W, row.H, row.Cycle, len(got), len(row.Slots))
@@ -235,6 +246,26 @@ func TestHighlightKeepsBackgroundAndDownloadOrder(t *testing.T) {
 	for i, index := range s.Assignment {
 		if bookID(s.Books[index]) != old[i] {
 			t.Fatal("download order changed the mosaic")
+		}
+	}
+}
+
+func TestBookTriggerLogoTracksPanelAndAvoidsCovers(t *testing.T) {
+	for _, size := range [][2]int{{1920, 1080}, {1366, 768}, {800, 600}, {3840, 2160}} {
+		for cycle := int64(0); cycle < 10; cycle++ {
+			p := panelLayout(size[0], size[1], cycle).Box
+			logo := booktriggerLogoBox(size[0], size[1], cycle)
+			if logo.W <= 0 || logo.Y <= p.bottom() || logo.bottom() > size[1] || logo.X < 0 || logo.right() > size[0] {
+				t.Fatalf("logo outside panel/screen: %+v %+v", p, logo)
+			}
+			if abs := logo.X + logo.W/2 - (p.X + p.W/2); abs < -1 || abs > 1 {
+				t.Fatal("logo not centered")
+			}
+			for _, slot := range coverSlots(size[0], size[1], false, p) {
+				if slot.intersects(logo.grow(4)) {
+					t.Fatal("cover overlaps brand")
+				}
+			}
 		}
 	}
 }

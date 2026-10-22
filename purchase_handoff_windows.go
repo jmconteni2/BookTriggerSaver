@@ -16,7 +16,7 @@ import (
 	"unsafe"
 )
 
-const saverVersion = "11.2"
+const saverVersion = "11.3"
 
 func purchaseTrace(event, detail string) {
 	root, err := appDir()
@@ -147,7 +147,7 @@ func runPurchaseHelper(args []string) error {
 		return err
 	}
 	purchaseTrace("saver_exited", "")
-	ctx, cancel := context.WithTimeout(context.Background(), 2*time.Minute)
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
 	if err = waitForNormalDesktop(ctx, normalDesktopActive); err != nil {
 		purchaseTrace("desktop_wait_error", err.Error())

@@ -66,6 +66,24 @@ func panelLayout(w, h int, cycle int64) Panel {
 	return Panel{Box{x, y, pw, ph}, r, logo, Box{x + pw/2 - int(float64(pw)*.05), y + int(float64(ph)*.52), int(float64(pw) * .1), 1}, clock, clamp(int(math.Min(float64(pw)*.18, float64(ph)*.34)), 10, 88), footer, clamp(int(float64(w)*.009), 10, 14)}
 }
 
+// Keep the supplied 1419x571 logo below the clock panel, anchored to it.
+func booktriggerLogoBox(w, h int, cycle int64) Box {
+	return logoBelowPanel(h, panelLayout(w, h, cycle).Box)
+}
+func logoBelowPanel(h int, p Box) Box {
+	gap := clamp(p.H/24, 6, 14)
+	available := h - p.bottom() - gap - 8
+	if available < 12 {
+		return Box{}
+	}
+	width := min(p.W*65/100, 1419*min(available, p.H/3)/571)
+	height := width * 571 / 1419
+	if width < 1 || height < 1 {
+		return Box{}
+	}
+	return Box{p.X + (p.W-width)/2, p.bottom() + gap, width, height}
+}
+
 func coverSlots(w, h int, preview bool, panel Box) []Box {
 	cols, rows := clamp(w/112, 4, 32), clamp(h/155, 3, 16)
 	if preview && w < 250 {
@@ -82,11 +100,13 @@ func coverSlots(w, h int, preview bool, panel Box) []Box {
 	}
 	margin := int(math.Max(8, math.Min(float64(w)*.012, 24)))
 	reserved := panel.grow(margin)
+	brand := logoBelowPanel(h, panel)
+	brandReserved := brand.grow(4)
 	var out []Box
 	for row := 0; row < rows; row++ {
 		for col := 0; col < cols; col++ {
 			r := Box{int(float64(col)*cw + (cw-bw)/2), int(float64(row)*ch + (ch-bh)/2), int(bw), int(bh)}
-			if r.W > 0 && r.H > 0 && !r.intersects(reserved) {
+			if r.W > 0 && r.H > 0 && !r.intersects(reserved) && (brand.W == 0 || !r.intersects(brandReserved)) {
 				out = append(out, r)
 			}
 		}
