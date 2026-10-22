@@ -1,28 +1,34 @@
-# Preparación para SignPath Foundation
+# Code signing policy
 
-## Qué está resuelto
+## Estado
 
-El instalador y el motor se generan desde código fuente de este paquete. No existe una dependencia de ejecutables anteriores ni de una DLL opaca. El resultado es un único PE de Windows x64, con recursos generables desde sus definiciones, metadatos de producto y versión, pruebas portables y una prueba gráfica preparada para Windows.
+Solicitud al programa gratuito de SignPath Foundation **en preparación, no enviada ni aprobada**. BookTriggerSaver v11.5 se distribuye sin firma Authenticode. No existe actualmente patrocinio, certificado configurado ni integración de firma activada.
 
-Se incluye licencia MIT del código y documentación de privacidad, componentes, compilación e instalación. El flujo de GitHub Actions compila desde un checkout del repositorio y entrega un artefacto de compilación sin firmar. No dispone de credenciales ni ejecuta ninguna solicitud de firma.
+## Responsabilidades
 
-## Lo que falta para solicitarlo
+El responsable del proyecto y propietario del repositorio es [jmconteni2](https://github.com/jmconteni2), de J.M. Pocket. Mantiene el código y los scripts, revisa las contribuciones externas y decidirá personalmente qué versiones solicita firmar. Actualmente no hay otros mantenedores designados. No se atribuye una revisión independiente a una segunda persona.
 
-1. Confirmar la distribución abierta del código y los derechos de los recursos gráficos antes de hacer público el repositorio.
-2. Crear el repositorio público de J.M. Pocket y subir las fuentes. El ZIP de esta entrega no equivale a haberlo publicado.
-3. Ejecutar el flujo de Windows, superar su prueba gráfica nativa y revisar el resultado en Windows 10/11: vista previa, dibujo, activación por inactividad y apertura real del navegador.
-4. Definir las personas que mantienen, revisan y aprueban versiones, activar la autenticación multifactor y establecer las reglas de revisión del repositorio.
-5. Solicitar la aceptación del proyecto en https://signpath.org/apply y facilitar los enlaces públicos del proyecto y de sus versiones.
-6. Tras la aprobación, configurar la integración de SignPath con los artefactos de GitHub, la política de firma y la aprobación manual de cada versión.
+El responsable ha indicado que activó la autenticación de dos factores en GitHub. Si se aprueba la cuenta, deberá activar también MFA en SignPath y aprobar manualmente cada solicitud de firma. No se solicitarán firmas automáticamente desde contribuciones externas.
 
-SignPath exige una licencia abierta admitida, ausencia de componentes propietarios no permitidos y trazabilidad verificable entre las fuentes y los binarios. También valora la reputación del proyecto. Disponer de fuentes completas no implica que la solicitud esté aceptada ni garantiza que lo vaya a estar.
+## Origen de los binarios
 
-La firma gratuita de la fundación utiliza un certificado emitido a SignPath Foundation. No equivale a obtener un certificado gratuito a nombre legal de J.M. Pocket. No se debe anunciar que SignPath firma el proyecto hasta que la solicitud esté aprobada y la firma se haya aplicado realmente.
+El código, recursos editables y scripts de compilación son públicos y tienen licencia MIT, con las licencias y aclaraciones indicadas en [NOTICE.md](NOTICE.md). No se incluyen motores externos opacos. GitHub Actions compila desde el checkout del repositorio, ejecuta pruebas portables y nativas y publica el ejecutable y su SHA-256.
 
-Cuando se apruebe el servicio, la página pública deberá incorporar la política de firma y los créditos que exija SignPath. La presente entrega no publica esos créditos como si ya existiera patrocinio.
+La [candidata v11.5](DOWNLOAD.md) corresponde al commit `2fa5aa5fd4fe6adcd52ed7c5f1ce1cc8131ea064`, con [compilación y pruebas verificadas](https://github.com/jmconteni2/BookTriggerSaver/actions/runs/39824074037). El instalador y el salvapantallas son el mismo ejecutable: se copia sin modificación como `BookTrigger.scr`.
 
-## Documentación oficial consultada
+## Política prevista tras la aceptación
 
-- Condiciones: https://signpath.org/terms.html
-- Servicio: https://signpath.org/
-- Firma y reputación en Windows: https://learn.microsoft.com/en-us/windows/apps/package-and-deploy/smartscreen-reputation
+Se configurará la integración de origen verificable con GitHub Actions, restricciones de nombre y versión del producto y aprobación manual de cada versión por el responsable. Solo se publicará como firmado un archivo cuya firma se haya verificado realmente.
+
+El crédito requerido, **a publicar como crédito activo únicamente después de la aprobación**, es: “Free code signing provided by [SignPath.io](https://about.signpath.io), certificate by [SignPath Foundation](https://signpath.org)”. Ese certificado identificaría a SignPath Foundation como editor; no sería un certificado a nombre legal de J.M. Pocket.
+
+## Privacidad
+
+Consulta [PRIVACY.md](PRIVACY.md) para las conexiones de catálogo, imágenes y enlaces, los datos locales y los servicios de terceros. La instalación anuncia y configura la selección y el tiempo de espera del salvapantallas; la desinstalación está disponible desde Windows. No se cambia la protección por contraseña.
+
+## Condiciones oficiales
+
+- [Condiciones de SignPath Foundation](https://signpath.org/terms.html)
+- [Formulario de solicitud](https://signpath.org/apply)
+
+SignPath decide la aceptación, incluidas las comprobaciones de reputación y control del proyecto. No hay aprobación garantizada ni fecha de activación confirmada. Una firma válida tampoco garantiza que Windows deje de mostrar todos los avisos de reputación.

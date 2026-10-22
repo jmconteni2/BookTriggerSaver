@@ -6,7 +6,7 @@ La aplicación usa la biblioteca estándar y el runtime de Go. Su licencia BSD s
 
 Windows aporta GDI+, GDI, User32, Kernel32, Shell32, Advapi32 y Comctl32. Estas bibliotecas del sistema no se distribuyen con el proyecto.
 
-El logotipo, el halo, el cartel de bienvenida y el icono son los recursos facilitados para el proyecto de J.M. Pocket. Se conservan sus bytes. La licencia de código no concede derechos sobre marcas comerciales ni sobre contenidos de terceros. Antes de publicar estos recursos debe confirmarse que se dispone de sus derechos de distribución bajo las condiciones del proyecto abierto.
+Los logotipos de J.M. Pocket y BookTrigger, el halo, el cartel de bienvenida y el icono fueron facilitados por el responsable del proyecto, quien autorizó su publicación junto al código bajo MIT. Los archivos suministrados se conservan sin modificar. Esta licencia no concede derechos sobre marcas comerciales ni sobre contenidos de terceros.
 
 Las portadas, títulos y enlaces se descargan del catálogo público configurado y no forman parte del repositorio. Sus derechos pertenecen a sus respectivos titulares. El proyecto no incluye libros, manuscritos ni la hoja de cálculo de origen.
 

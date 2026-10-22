@@ -1,95 +1,33 @@
-# BookTriggerSaver v11 — motor reconstruido desde fuentes
+# BookTriggerSaver
 
-Salvapantallas Windows x64 de J.M. Pocket. El motor, el instalador y el fundido se compilan íntegramente desde los archivos Go de este proyecto. El resultado es un único ejecutable que también se instala como `BookTrigger.scr`.
+Salvapantallas gratuito y de código abierto para Windows x64 de J.M. Pocket. Muestra el catálogo de BookTrigger sobre estanterías oscuras, con portadas destacadas, reloj móvil y decoración vegetal.
 
-No se utiliza `original_v9.exe`, `engine.scr`, un parche binario, el adaptador `btfade1.dll` ni un compilador de C. No se han recuperado las fuentes originales: esta es una implementación nueva del comportamiento y del diseño medidos en v10.3.
+## Descargar e instalar
 
-## Instalar
+Consulta [Descarga v11.5](DOWNLOAD.md). El instalador actual está **sin firma Authenticode**; la solicitud a SignPath está en preparación, todavía no enviada ni aprobada.
 
-Ejecuta `BookTriggerSaver_v11_5.exe`, elige los minutos de inactividad y pulsa **Instalar y activar**. La pantalla final mantiene el cartel original y el botón **Ejecutar ahora**. La actualización se puede instalar sobre v10.3 con el salvapantallas cerrado.
+Ejecuta `BookTriggerSaver_v11_5.exe`, elige el tiempo de inactividad y pulsa **Instalar y activar**. El botón **Ejecutar ahora** permite probarlo al terminar. La instalación configura el salvapantallas del usuario actual sin permisos de administrador.
 
-- Tiempo de espera: 1, 2, 3, 5, 10, 15 o 30 minutos.
-- Cada libro destacado permanece seleccionado durante 15 segundos, incluidos los fundidos de entrada y salida de medio segundo.
-- La caja del logo y la hora cambia de posición cada 30 segundos.
-- Intro abre el enlace de la portada destacada. Las demás teclas y la actividad del ratón cierran el salvapantallas.
-- La vista previa de Windows se aloja en su ventana padre y no consume el teclado del panel de configuración.
-- Las descargas se realizan en segundo plano. Un fallo de conexión conserva la biblioteca guardada y no interrumpe la selección vigente.
-- La instalación es por usuario y no necesita permisos de administrador. No altera la contraseña ni las condiciones de desbloqueo de Windows.
+- Activación configurable: 1, 2, 3, 5, 10, 15 o 30 minutos.
+- Libro destacado durante 15 segundos, incluidos fundidos suaves de medio segundo.
+- Caja del reloj y logotipos en movimiento cada 30 segundos.
+- Intro abre el enlace del libro visible en el navegador predeterminado; las demás teclas cierran el salvapantallas.
+- Catálogo consultado cada dos minutos, con imágenes descargadas en segundo plano y caché local para trabajar sin conexión después de la primera sincronización.
 
-La primera ejecución de v11 necesita conexión para crear su nueva caché. No se borran las cachés ni los archivos de las versiones anteriores. El origen del catálogo se conserva en `endpoint.txt` dentro de `%APPDATA%\JMPocketSalvapantallas`; el conector de Google Apps Script sigue siendo el mismo y no se modifica ni despliega desde este proyecto.
+Los archivos se instalan en `%APPDATA%\JMPocketSalvapantallas`. El instalador cambia la selección, activación y tiempo de espera del salvapantallas; guarda la configuración anterior. No cambia la contraseña ni la protección de bloqueo de Windows. Para quitarlo, usa **Aplicaciones instaladas > BookTriggerSaver > Desinstalar**. La desinstalación restaura los ajustes anteriores cuando corresponde y conserva la caché.
 
-## Compilar en Windows
+## Compilación y verificación
 
-Instala Go 1.27.3 para reproducir la versión entregada y ejecuta:
+Con Go 1.27.3 en Windows, ejecuta `./Build.ps1`. El script ejecuta pruebas nativas y `go vet`, genera recursos con `go-winres` 0.3.3 y compila `dist/BookTriggerSaver_v11_5.exe`. La aplicación instalada no necesita Go ni dependencias adicionales. Las únicas bibliotecas de ejecución son la biblioteca estándar de Go y las de Windows.
 
-```powershell
-./Build.ps1
-```
+[GitHub Actions](https://github.com/jmconteni2/BookTriggerSaver/actions) ejecuta pruebas portables con detector de carreras y pruebas nativas de Windows. La [compilación candidata v11.5](https://github.com/jmconteni2/BookTriggerSaver/actions/runs/39824074037) superó los 25 grupos de pruebas sin omisiones, incluidas las pruebas del Explorador, argumentos Unicode, enlace de la portada visible y dibujo GDI/GDI+. El responsable del proyecto ha comunicado que funciona correctamente en su última prueba y ha aprobado el diseño. Esto no sustituye pruebas en todos los equipos Windows.
 
-El script ejecuta las pruebas, genera los recursos desde `winres/winres.json` y el icono, y compila `dist/BookTriggerSaver_v11_5.exe`. La primera generación de recursos descarga la herramienta abierta `go-winres` 0.3.3. No requiere comprar herramientas ni certificados. La aplicación terminada no necesita Go instalado.
+La apertura se delega una sola vez al Explorador de Windows existente, después de cerrar la ventana del salvapantallas. No usa el auxiliar ni la espera de escritorio de versiones anteriores. El registro local `apertura.log` incluye fases, dominio y hash, sin la URL completa ni sus parámetros.
 
-`go.mod` fija Go 1.24 como versión mínima del lenguaje. La versión del compilador de cada compilación queda registrada junto al ejecutable.
+## Code signing policy
 
-## Pruebas
+Consulta la [política de firma y estado de la solicitud](SIGNPATH.md). Actualmente no existe firma ni patrocinio aprobado por SignPath Foundation.
 
-```bash
-go test -race -count=1 ./...
-```
+## Licencia y privacidad
 
-Las pruebas portables comparan la geometría con mediciones guardadas de v10.3, los tiempos, el recorrido de la caja, las asociaciones portada/enlace, la vista previa y el manejo del catálogo y la caché. No utilizan el ejecutable antiguo para ejecutarse. Las referencias son datos JSON en `testdata`.
-
-En Windows se ejecuta además `TestNativeGraphicsOffscreen`: usa GDI/GDI+ reales para dibujar en memoria, comprobar el interior de la caja y la asociación de la portada dibujada con su enlace. No instala el salvapantallas ni abre el navegador. Esta prueba está preparada y compilada, pero no se ha ejecutado en el entorno Linux de esta entrega.
-
-`.github/workflows/build.yml` contiene las pruebas portables y la compilación y pruebas nativas en Windows. El flujo queda listo para ejecutarse cuando se publique el repositorio; no se ha ejecutado en GitHub ni se ha creado un repositorio desde esta entrega.
-
-## Fuentes
-
-- `scene.go`: caja, mosaico, selección de libros y curva del fundido.
-- `catalog.go`: cliente HTTP, descarga de portadas y caché.
-- `graphics_windows.go`: dibujo nativo, imágenes, tipografía, recursos y doble búfer.
-- `saver_windows.go`: ventana completa o vista previa, temporizador y entradas del usuario.
-- `main_windows.go`: instalación, configuración, desinstalación y lanzamiento.
-- `welcome_windows.go`: cartel final original.
-- `winres`: definición editable de recursos y metadatos de Windows.
-
-## Firma
-
-La entrega está **sin firma Authenticode**. Reconstruir las fuentes no crea un certificado ni elimina los avisos de Windows.
-
-La preparación para solicitar la firma gratuita se explica en `SIGNPATH.md`. SignPath debe revisar y aceptar el proyecto. El archivo firmado del instalador se copia sin modificar como `.scr`, de modo que no hace falta firmar un motor externo ni una DLL propia.
-
-`Sign-Release.ps1` permite compilar, firmar y verificar el único ejecutable si se dispone de un certificado compatible con SignTool. No crea certificados ni cambia la confianza del equipo. La integración concreta con SignPath se configura después de que exista y se apruebe la cuenta del proyecto.
-
-## Licencias y privacidad
-
-El código nuevo tiene licencia MIT. Los recursos y las dependencias se describen en `NOTICE.md`. Consulta `PRIVACY.md` para conocer las conexiones y los datos que utiliza la aplicación.
-
-## Corrección v11.1
-
-La carga inicial espera un primer grupo de hasta ocho portadas antes de mostrar resultados parciales. El cambio de destacado conserva la distribución del mosaico y las actualizaciones del catálogo conservan la identidad de cada portada aunque cambie el orden de descarga. Esta revisión necesita validación visual en el equipo donde se detectó el fallo.
-
-La apertura de compra usa ShellExecuteExW con inicialización COM y espera de activación antes de terminar. Intro conserva el enlace de la última portada dibujada correctamente, ignora la repetición de una tecla Intro mantenida al arrancar y muestra el error de Windows si no puede abrir el navegador.
-
-## Apertura de compra v11.2
-
-Intro inicia una instancia auxiliar del mismo ejecutable en `winsta0\default`. Esta espera a que termine el proceso del salvapantallas y a que el escritorio normal esté activo antes de abrir el enlace. No cambia la contraseña, no cambia de escritorio y no desbloquea Windows. Si no se desbloquea en cinco segundos, la petición caduca. La petición al navegador tiene un límite de 30 segundos y no se reintenta automáticamente.
-
-`%APPDATA%\JMPocketSalvapantallas\apertura.log` registra versión, hora, proceso, fases, dominio y un identificador hash del enlace; no guarda la URL completa ni sus parámetros. La aceptación de Windows no acredita que la página web haya terminado de cargar.
-
-## Revisión v11.3
-
-Incluye el logo BookTrigger suministrado, sin modificar sus bytes, centrado debajo de la caja del reloj y anclado a sus movimientos. El mosaico reserva su espacio. La espera del escritorio se limita a cinco segundos como medida de contención de la pantalla verde comunicada: la causa de ese bloqueo sigue pendiente de reproducir y resolver. Esta revisión no debe darse por validada para distribución.
-
-## Diseño v11.4
-
-Estantería oscura adaptable dibujada por el motor, portadas apoyadas en las baldas y sombras suaves. El destacado se amplía manteniendo su base en el estante. Enredaderas decorativas transparentes acompañan a la caja móvil y dejan libre su centro; se omiten en la miniatura diminuta del panel de Windows. El logo BookTrigger permanece debajo de la caja. No cambia la apertura de compra de v11.3 ni se considera resuelto el bloqueo de pantalla verde.
-
-## Revisión v11.5
-
-Se sustituye el logo inferior por el wordmark de BookTrigger suministrado. El mosaico cubre todas las baldas también detrás de la caja: ya no se eliminan portadas por la región rectangular de la decoración, y mover la caja no cambia su distribución.
-
-La apertura de compra usa ahora la automatización del escritorio del Explorador que ya está ejecutándose. Se retiran el proceso auxiliar, la espera del escritorio y la apertura directa desde el contexto del salvapantallas. La URL se entrega una sola vez como cadena Unicode, sin consola ni reescrituras. Se limita la llamada a tres segundos y se cancela la llamada COM pendiente si vence; no hay reintento automático. No se cambia el bloqueo de Windows ni la contraseña.
-
-Las fases nuevas de `apertura.log` son `explorer_request`, `explorer_accepted`, `explorer_error` y `explorer_timeout`. La prueba nativa delega al Explorador el lanzamiento de un programa de prueba inocuo y verifica su escritorio y argumentos; se omite con aviso si el runner carece de Explorador interactivo. Sigue siendo necesaria la validación manual en el equipo donde se comunicó la pantalla verde.
-
-Referencia del mecanismo: https://devblogs.microsoft.com/oldnewthing/20131118-00/?p=2643/ y https://learn.microsoft.com/en-us/windows/win32/api/exdisp/nf-exdisp-ishellwindows-findwindowsw
+Código y recursos propios distribuidos bajo [MIT](LICENSE), con las aclaraciones de [componentes y recursos](NOTICE.md). Las portadas obtenidas del catálogo pertenecen a sus respectivos titulares y no se incluyen en este repositorio. Consulta la [política de privacidad](PRIVACY.md).
