@@ -16,7 +16,7 @@ import (
 	"unsafe"
 )
 
-const saverVersion = "11.3"
+const saverVersion = "11.4"
 
 func purchaseTrace(event, detail string) {
 	root, err := appDir()

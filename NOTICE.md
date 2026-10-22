@@ -9,3 +9,5 @@ Windows aporta GDI+, GDI, User32, Kernel32, Shell32, Advapi32 y Comctl32. Estas 
 El logotipo, el halo, el cartel de bienvenida y el icono son los recursos facilitados para el proyecto de J.M. Pocket. Se conservan sus bytes. La licencia de código no concede derechos sobre marcas comerciales ni sobre contenidos de terceros. Antes de publicar estos recursos debe confirmarse que se dispone de sus derechos de distribución bajo las condiciones del proyecto abierto.
 
 Las portadas, títulos y enlaces se descargan del catálogo público configurado y no forman parte del repositorio. Sus derechos pertenecen a sus respectivos titulares. El proyecto no incluye libros, manuscritos ni la hoja de cálculo de origen.
+
+`assets/ivy.png` es un adorno vegetal generado para este proyecto con la herramienta integrada de imágenes. El recurso se distribuye junto al proyecto bajo MIT, sin atribuir derechos sobre marcas ajenas. La estantería se dibuja desde el código y no incorpora la fotografía de referencia ni sus libros.

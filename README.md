@@ -6,7 +6,7 @@ No se utiliza `original_v9.exe`, `engine.scr`, un parche binario, el adaptador `
 
 ## Instalar
 
-Ejecuta `BookTriggerSaver_v11_3.exe`, elige los minutos de inactividad y pulsa **Instalar y activar**. La pantalla final mantiene el cartel original y el botón **Ejecutar ahora**. La actualización se puede instalar sobre v10.3 con el salvapantallas cerrado.
+Ejecuta `BookTriggerSaver_v11_4.exe`, elige los minutos de inactividad y pulsa **Instalar y activar**. La pantalla final mantiene el cartel original y el botón **Ejecutar ahora**. La actualización se puede instalar sobre v10.3 con el salvapantallas cerrado.
 
 - Tiempo de espera: 1, 2, 3, 5, 10, 15 o 30 minutos.
 - Cada libro destacado permanece seleccionado durante 15 segundos, incluidos los fundidos de entrada y salida de medio segundo.
@@ -26,7 +26,7 @@ Instala Go 1.27.3 para reproducir la versión entregada y ejecuta:
 ./Build.ps1
 ```
 
-El script ejecuta las pruebas, genera los recursos desde `winres/winres.json` y el icono, y compila `dist/BookTriggerSaver_v11_3.exe`. La primera generación de recursos descarga la herramienta abierta `go-winres` 0.3.3. No requiere comprar herramientas ni certificados. La aplicación terminada no necesita Go instalado.
+El script ejecuta las pruebas, genera los recursos desde `winres/winres.json` y el icono, y compila `dist/BookTriggerSaver_v11_4.exe`. La primera generación de recursos descarga la herramienta abierta `go-winres` 0.3.3. No requiere comprar herramientas ni certificados. La aplicación terminada no necesita Go instalado.
 
 `go.mod` fija Go 1.24 como versión mínima del lenguaje. La versión del compilador de cada compilación queda registrada junto al ejecutable.
 
@@ -79,3 +79,7 @@ Intro inicia una instancia auxiliar del mismo ejecutable en `winsta0\default`. E
 ## Revisión v11.3
 
 Incluye el logo BookTrigger suministrado, sin modificar sus bytes, centrado debajo de la caja del reloj y anclado a sus movimientos. El mosaico reserva su espacio. La espera del escritorio se limita a cinco segundos como medida de contención de la pantalla verde comunicada: la causa de ese bloqueo sigue pendiente de reproducir y resolver. Esta revisión no debe darse por validada para distribución.
+
+## Diseño v11.4
+
+Estantería oscura adaptable dibujada por el motor, portadas apoyadas en las baldas y sombras suaves. El destacado se amplía manteniendo su base en el estante. Enredaderas decorativas transparentes acompañan a la caja móvil y dejan libre su centro; se omiten en la miniatura diminuta del panel de Windows. El logo BookTrigger permanece debajo de la caja. No cambia la apertura de compra de v11.3 ni se considera resuelto el bloqueo de pantalla verde.

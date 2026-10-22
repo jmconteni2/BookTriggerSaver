@@ -84,29 +84,48 @@ func logoBelowPanel(h int, p Box) Box {
 	return Box{p.X + (p.W-width)/2, p.bottom() + gap, width, height}
 }
 
+type shelfGrid struct {
+	Columns, Rows int
+	CellW, CellH  float64
+	Lip           int
+}
+
+func shelfGeometry(w, h int, preview bool) shelfGrid {
+	cols, rows := clamp(w/170, 3, 24), clamp(h/235, 2, 12)
+	if preview && w < 340 {
+		cols, rows = 4, 3
+	}
+	return shelfGrid{cols, rows, float64(w) / float64(cols), float64(h) / float64(rows), clamp(h/80, 8, 20)}
+}
+func shelfBaselines(w, h int, preview bool) []int {
+	grid := shelfGeometry(w, h, preview)
+	out := make([]int, grid.Rows)
+	for row := range out {
+		out[row] = int(float64(row+1)*grid.CellH) - grid.Lip
+	}
+	return out
+}
+func plantsAroundPanel(w, h int, p Box) Box {
+	if w <= 340 || h <= 240 {
+		return Box{}
+	}
+	edge := clamp(p.W/10, 8, 48)
+	top := clamp(p.H/10, 6, 28)
+	return Box{p.X - edge, p.Y - top, p.W + 2*edge, (p.W + 2*edge) * 2 / 3}
+}
 func coverSlots(w, h int, preview bool, panel Box) []Box {
-	cols, rows := clamp(w/112, 4, 32), clamp(h/155, 3, 16)
-	if preview && w < 250 {
-		cols = 8
-	}
-	cw, ch := float64(w)/float64(cols), float64(h)/float64(rows)
-	pad := math.Max(2, math.Min(9, .07*math.Min(cw, ch)))
-	bw, bh := cw-2*pad, ch-2*pad
-	bw = math.Min(bw, bh/1.46)
-	bh = bw * 1.46
-	if bh > ch-2*pad {
-		bh = ch - 2*pad
-		bw = bh / 1.46
-	}
-	margin := int(math.Max(8, math.Min(float64(w)*.012, 24)))
+	grid := shelfGeometry(w, h, preview)
+	width := min(grid.CellW*.75, grid.CellH*.76/1.46)
+	height := width * 1.46
+	margin := clamp(w/100, 8, 24)
 	reserved := panel.grow(margin)
 	brand := logoBelowPanel(h, panel)
-	brandReserved := brand.grow(4)
+	plants := plantsAroundPanel(w, h, panel)
 	var out []Box
-	for row := 0; row < rows; row++ {
-		for col := 0; col < cols; col++ {
-			r := Box{int(float64(col)*cw + (cw-bw)/2), int(float64(row)*ch + (ch-bh)/2), int(bw), int(bh)}
-			if r.W > 0 && r.H > 0 && !r.intersects(reserved) && (brand.W == 0 || !r.intersects(brandReserved)) {
+	for _, baseline := range shelfBaselines(w, h, preview) {
+		for col := 0; col < grid.Columns; col++ {
+			r := Box{int(float64(col)*grid.CellW + (grid.CellW-width)/2), baseline - int(height), int(width), int(height)}
+			if r.W > 0 && r.H > 0 && !r.intersects(reserved) && (brand.W == 0 || !r.intersects(brand.grow(6))) && (plants.W == 0 || !r.intersects(plants.grow(6))) {
 				out = append(out, r)
 			}
 		}
@@ -115,8 +134,17 @@ func coverSlots(w, h int, preview bool, panel Box) []Box {
 }
 func enlarged(r Box) Box {
 	w, h := int(float64(r.W)*1.45), int(float64(r.H)*1.45)
-	return Box{r.X - (w-r.W)/2, r.Y - (h-r.H)/2, w, h}
+	// Keep the featured book resting on its shelf during the fade.
+	return Box{r.X - (w-r.W)/2, r.bottom() - h, w, h}
 }
+func (s *Scene) highlightFits(slot int) bool {
+	r := enlarged(s.Slots[slot])
+	p := panelLayout(s.W, s.H, s.Cycle).Box
+	brand := booktriggerLogoBox(s.W, s.H, s.Cycle)
+	plants := plantsAroundPanel(s.W, s.H, p)
+	return r.X >= 2 && r.Y >= 2 && r.right() <= s.W-2 && r.bottom() <= s.H && !r.intersects(p.grow(10)) && (brand.W == 0 || !r.intersects(brand.grow(6))) && (plants.W == 0 || !r.intersects(plants.grow(6)))
+}
+
 func haloBounds(r Box) Box {
 	return Box{r.X - r.W*96/272, r.Y - r.H*96/408, r.W * 464 / 272, r.H * 600 / 408}
 }
@@ -227,11 +255,17 @@ func (s *Scene) assign(next bool) {
 	var candidates []int
 	for slot, index := range s.Assignment {
 		b := s.Books[index]
-		if webURL(b.Link) && (!next || bookID(b) != s.Previous) {
+		if webURL(b.Link) && (!next || bookID(b) != s.Previous) && s.highlightFits(slot) {
 			candidates = append(candidates, slot)
 		}
 	}
 	chosen := s.rng.Intn(len(s.Slots))
+	for slot := range s.Slots {
+		if s.highlightFits(slot) {
+			chosen = slot
+			break
+		}
+	}
 	if len(candidates) > 0 {
 		chosen = candidates[s.rng.Intn(len(candidates))]
 	} else {

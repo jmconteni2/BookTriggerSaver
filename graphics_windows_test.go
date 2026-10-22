@@ -28,7 +28,7 @@ func TestNativeGraphicsOffscreen(t *testing.T) {
 	}
 	defer user32.NewProc("ReleaseDC").Call(0, dc)
 	dir := t.TempDir()
-	for name, data := range map[string][]byte{"logo.png": logo, "booktrigger.png": booktriggerLogo, "glow.png": glow, "book.png": pngSample()} {
+	for name, data := range map[string][]byte{"logo.png": logo, "ivy.png": ivy, "booktrigger.png": booktriggerLogo, "glow.png": glow, "book.png": pngSample()} {
 		if e := os.WriteFile(filepath.Join(dir, name), data, 0600); e != nil {
 			t.Fatal(e)
 		}
@@ -55,7 +55,7 @@ func TestNativeGraphicsOffscreen(t *testing.T) {
 			t.Fatalf("rendered book/link mismatch: %q != %q", link, b.Link)
 		}
 		p := panelLayout(scene.W, scene.H, scene.Cycle)
-		pixel, _, _ := gdi.NewProc("GetPixel").Call(g.front.DC, uintptr(p.Box.X+20), uintptr(p.Box.Y+p.Box.H/2))
+		pixel, _, _ := gdi.NewProc("GetPixel").Call(g.front.DC, uintptr(p.Box.X+p.Box.W/2), uintptr(p.Box.Y+p.Box.H/2))
 		if uint32(pixel) != 0x23140b {
 			t.Fatalf("panel interior: %#x", pixel)
 		}

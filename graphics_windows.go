@@ -281,13 +281,14 @@ func (r *saverGraphics) paint(dc uintptr, scene *Scene, now time.Time, status, l
 		if e != nil {
 			return "", e
 		}
-		gp("GdipGraphicsClear", g, 0xff000000)
+		drawShelves(g, scene.W, scene.H, scene.Preview)
 		for i, slot := range scene.Slots {
 			if i == scene.Featured || i >= len(scene.Assignment) {
 				continue
 			}
 			b := scene.Books[scene.Assignment[i]]
-			fillRect(g, slot.grow(1), 0xff252935)
+			fillRect(g, Box{slot.X + 7, slot.Y + 4, slot.W + 4, max(1, slot.H-4)}, 0x70000000)
+			fillRect(g, slot.grow(1), 0xff252d29)
 			drawImage(g, r.cache.get(b.Path), slot, 1)
 		}
 		gp("GdipDeleteGraphics", g)
@@ -317,6 +318,7 @@ func (r *saverGraphics) paint(dc uintptr, scene *Scene, now time.Time, status, l
 	}{{10, p.Radius + 10, 0x2212376f}, {4, p.Radius + 4, 0x5c2255a2}, {1, p.Radius + 1, 0xdc477fcf}, {-1, p.Radius, 0xff0b1423}} {
 		roundRect(g, p.Box.grow(v.Expand), v.Radius, v.Color)
 	}
+	drawImage(g, r.cache.get(filepath.Join(filepath.Dir(logoPath), "ivy.png")), plantsAroundPanel(scene.W, scene.H, p.Box), 1)
 	drawImage(g, r.cache.get(logoPath), p.Logo, 1)
 	brand := booktriggerLogoBox(scene.W, scene.H, scene.Cycle)
 	drawImage(g, r.cache.get(filepath.Join(filepath.Dir(logoPath), "booktrigger.png")), brand, 1)

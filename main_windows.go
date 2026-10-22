@@ -26,6 +26,9 @@ var logo []byte
 //go:embed assets/booktrigger.png
 var booktriggerLogo []byte
 
+//go:embed assets/ivy.png
+var ivy []byte
+
 //go:embed assets/glow.png
 var glow []byte
 
@@ -360,7 +363,7 @@ func registerUninstaller(path string) error {
 	}
 	defer syscall.RegCloseKey(h)
 	for n, v := range map[string]string{
-		"DisplayName": "BookTrigger — Salvapantallas", "DisplayVersion": "11.0.3",
+		"DisplayName": "BookTrigger — Salvapantallas", "DisplayVersion": "11.0.4",
 		"Publisher": "J.M. Contenidos", "DisplayIcon": path,
 		"InstallLocation": filepath.Dir(path), "UninstallString": `"` + path + `" --uninstall`,
 	} {
@@ -402,7 +405,7 @@ func install(timeoutSeconds uint32) error {
 		return e
 	}
 	path := filepath.Join(d, saverFile)
-	files := map[string][]byte{path: self, filepath.Join(d, "logo.png"): logo, filepath.Join(d, "booktrigger.png"): booktriggerLogo, filepath.Join(d, "glow.png"): glow}
+	files := map[string][]byte{path: self, filepath.Join(d, "logo.png"): logo, filepath.Join(d, "ivy.png"): ivy, filepath.Join(d, "booktrigger.png"): booktriggerLogo, filepath.Join(d, "glow.png"): glow}
 	endpointPath := filepath.Join(d, "endpoint.txt")
 	if _, e = os.Stat(endpointPath); errors.Is(e, os.ErrNotExist) {
 		files[endpointPath] = defaultEndpoint

@@ -60,46 +60,46 @@ func TestVisualReference(t *testing.T) {
 		}
 	}
 }
-func TestMosaicReference(t *testing.T) {
-	var rows []struct {
-		W, H    int
-		Cycle   int64
-		Preview bool
-		Slots   [][]int
-	}
-	data, e := os.ReadFile("testdata/slot-reference.json")
-	if e != nil {
-		t.Fatal(e)
-	}
-	if e = json.Unmarshal(data, &rows); e != nil {
-		t.Fatal(e)
-	}
-	for _, row := range rows {
-		// Original mosaic geometry, excluding the newly added brand area.
-		brand := booktriggerLogoBox(row.W, row.H, row.Cycle)
-		if brand.W > 0 {
-			filtered := make([][]int, 0, len(row.Slots))
-			for _, r := range row.Slots {
-				if !(Box{r[0], r[1], r[2], r[3]}).intersects(brand.grow(4)) {
-					filtered = append(filtered, r)
-				}
+func TestShelfAlignmentAndDecorationClearance(t *testing.T) {
+	for _, size := range [][2]int{{1920, 1080}, {3840, 2160}, {1366, 768}, {800, 600}, {320, 240}, {200, 120}} {
+		for cycle := int64(0); cycle < 10; cycle += 2 {
+			p := panelLayout(size[0], size[1], cycle).Box
+			plants := plantsAroundPanel(size[0], size[1], p)
+			brand := logoBelowPanel(size[1], p)
+			slots := coverSlots(size[0], size[1], size[0] < 340, p)
+			if len(slots) == 0 {
+				t.Fatalf("no books at %v cycle%d", size, cycle)
 			}
-			row.Slots = filtered
-		}
-		got := coverSlots(row.W, row.H, row.Preview, panelLayout(row.W, row.H, row.Cycle).Box)
-		if len(got) != len(row.Slots) {
-			t.Errorf("%dx%d cycle%d: %d slots != %d", row.W, row.H, row.Cycle, len(got), len(row.Slots))
-			continue
-		}
-		for i, r := range got {
-			want := row.Slots[i]
-			if r != (Box{want[0], want[1], want[2], want[3]}) {
-				t.Errorf("%dx%d slot%d: %+v != %v", row.W, row.H, i, r, want)
-				break
+			baselines := shelfBaselines(size[0], size[1], size[0] < 340)
+			for i, r := range slots {
+				supported := false
+				for _, base := range baselines {
+					if r.bottom() == base {
+						supported = true
+					}
+				}
+				if !supported {
+					t.Fatalf("floating book: %+v", r)
+				}
+				if r.X < 0 || r.Y < 0 || r.right() > size[0] || r.bottom() > size[1] {
+					t.Fatalf("book outside screen: %+v", r)
+				}
+				if r.intersects(p.grow(clamp(size[0]/100, 8, 24))) || (plants.W > 0 && r.intersects(plants.grow(6))) || (brand.W > 0 && r.intersects(brand.grow(6))) {
+					t.Fatal("book overlaps clock or decorations")
+				}
+				if enlarged(r).bottom() != r.bottom() {
+					t.Fatal("featured book left shelf")
+				}
+				for j := 0; j < i; j++ {
+					if r.intersects(slots[j]) {
+						t.Fatal("overlapping books")
+					}
+				}
 			}
 		}
 	}
 }
+
 func TestPanelContainedAndMovesAsOne(t *testing.T) {
 	for _, size := range [][2]int{{1920, 1080}, {3840, 2160}, {1366, 768}, {800, 600}, {320, 240}, {200, 120}, {80, 60}} {
 		positions := map[Box]bool{}
