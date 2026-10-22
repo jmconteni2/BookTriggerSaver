@@ -180,15 +180,17 @@ func (s *Scene) queue(books []Book, now time.Time) {
 	s.pending = copyBooks
 }
 func (s *Scene) assign(next bool) {
-	s.Assignment = make([]int, len(s.Slots))
 	if len(s.Books) == 0 || len(s.Slots) == 0 {
 		s.Featured = -1
 		s.Version++
 		return
 	}
-	perm := s.rng.Perm(len(s.Books))
-	for i := range s.Assignment {
-		s.Assignment[i] = perm[i%len(perm)]
+	if len(s.Assignment) != len(s.Slots) {
+		s.Assignment = make([]int, len(s.Slots))
+		perm := s.rng.Perm(len(s.Books))
+		for i := range s.Assignment {
+			s.Assignment[i] = perm[i%len(perm)]
+		}
 	}
 	var eligible []int
 	for i, b := range s.Books {
@@ -201,18 +203,27 @@ func (s *Scene) assign(next bool) {
 		s.Version++
 		return
 	}
+	// Select a cover already in the mosaic, without shuffling the background.
+	var candidates []int
+	for slot, index := range s.Assignment {
+		b := s.Books[index]
+		if webURL(b.Link) && (!next || bookID(b) != s.Previous) {
+			candidates = append(candidates, slot)
+		}
+	}
 	chosen := s.rng.Intn(len(s.Slots))
-	book := eligible[s.rng.Intn(len(eligible))]
-	// Books without a purchase link stay in the mosaic, never in the highlight.
-	if next && len(eligible) > 1 && bookID(s.Books[book]) == s.Previous {
+	if len(candidates) > 0 {
+		chosen = candidates[s.rng.Intn(len(candidates))]
+	} else {
+		book := eligible[s.rng.Intn(len(eligible))]
 		for _, i := range eligible {
-			if bookID(s.Books[i]) != s.Previous {
+			if !next || bookID(s.Books[i]) != s.Previous {
 				book = i
 				break
 			}
 		}
+		s.Assignment[chosen] = book
 	}
-	s.Assignment[chosen] = book
 	s.Featured = chosen
 	s.Version++
 }
@@ -227,6 +238,19 @@ func (s *Scene) step(now time.Time) bool {
 		s.Previous = bookID(b)
 	}
 	if len(s.pending) > 0 {
+		// Keep already displayed covers in their slots when download progress
+		// changes the catalogue order. Only unavailable covers are replaced.
+		indices := make(map[string]int, len(s.pending))
+		for i, b := range s.pending {
+			indices[bookID(b)] = i
+		}
+		for slot, old := range s.Assignment {
+			index, found := indices[bookID(s.Books[old])]
+			if !found {
+				index = s.rng.Intn(len(s.pending))
+			}
+			s.Assignment[slot] = index
+		}
 		s.Books = s.pending
 		s.pending = nil
 	}

@@ -212,3 +212,29 @@ func TestKeyboardAndPreview(t *testing.T) {
 		}
 	}
 }
+
+func TestHighlightKeepsBackgroundAndDownloadOrder(t *testing.T) {
+	now := time.Unix(12345, 0)
+	s := newScene(1920, 1080, false, 42, now)
+	books := fixtureBooks()
+	s.queue(books, now)
+	before := append([]int(nil), s.Assignment...)
+	s.step(now.Add(featuredDuration))
+	if !reflect.DeepEqual(before, s.Assignment) {
+		t.Fatal("highlight shuffled the mosaic")
+	}
+	// A progress update may reorder books but must retain visible identities.
+	s.queue([]Book{books[2], books[0], books[1]}, now)
+	// Test the next non-layout-changing cycle.
+	s.Cycle = 2
+	old := make([]string, len(s.Assignment))
+	for i, index := range s.Assignment {
+		old[i] = bookID(s.Books[index])
+	}
+	s.step(now.Add(2 * featuredDuration))
+	for i, index := range s.Assignment {
+		if bookID(s.Books[index]) != old[i] {
+			t.Fatal("download order changed the mosaic")
+		}
+	}
+}

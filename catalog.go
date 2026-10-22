@@ -269,7 +269,7 @@ func (s *CatalogStore) refresh(ctx context.Context) error {
 	lastPublish := time.Now()
 	for b := range results {
 		ready = append(ready, b)
-		if len(previous) == 0 && (len(ready) == 1 || time.Since(lastPublish) > 500*time.Millisecond) {
+		if len(previous) == 0 && (len(ready) >= min(8, len(books)) && time.Since(lastPublish) > 500*time.Millisecond) {
 			s.publish(ready, "Cargando la biblioteca…")
 			lastPublish = time.Now()
 		}

@@ -6,7 +6,7 @@ No se utiliza `original_v9.exe`, `engine.scr`, un parche binario, el adaptador `
 
 ## Instalar
 
-Ejecuta `BookTriggerSaver_v11.exe`, elige los minutos de inactividad y pulsa **Instalar y activar**. La pantalla final mantiene el cartel original y el botón **Ejecutar ahora**. La actualización se puede instalar sobre v10.3 con el salvapantallas cerrado.
+Ejecuta `BookTriggerSaver_v11_1.exe`, elige los minutos de inactividad y pulsa **Instalar y activar**. La pantalla final mantiene el cartel original y el botón **Ejecutar ahora**. La actualización se puede instalar sobre v10.3 con el salvapantallas cerrado.
 
 - Tiempo de espera: 1, 2, 3, 5, 10, 15 o 30 minutos.
 - Cada libro destacado permanece seleccionado durante 15 segundos, incluidos los fundidos de entrada y salida de medio segundo.
@@ -26,7 +26,7 @@ Instala Go 1.27.3 para reproducir la versión entregada y ejecuta:
 ./Build.ps1
 ```
 
-El script ejecuta las pruebas, genera los recursos desde `winres/winres.json` y el icono, y compila `dist/BookTriggerSaver_v11.exe`. La primera generación de recursos descarga la herramienta abierta `go-winres` 0.3.3. No requiere comprar herramientas ni certificados. La aplicación terminada no necesita Go instalado.
+El script ejecuta las pruebas, genera los recursos desde `winres/winres.json` y el icono, y compila `dist/BookTriggerSaver_v11_1.exe`. La primera generación de recursos descarga la herramienta abierta `go-winres` 0.3.3. No requiere comprar herramientas ni certificados. La aplicación terminada no necesita Go instalado.
 
 `go.mod` fija Go 1.24 como versión mínima del lenguaje. La versión del compilador de cada compilación queda registrada junto al ejecutable.
 
@@ -63,3 +63,7 @@ La preparación para solicitar la firma gratuita se explica en `SIGNPATH.md`. Si
 ## Licencias y privacidad
 
 El código nuevo tiene licencia MIT. Los recursos y las dependencias se describen en `NOTICE.md`. Consulta `PRIVACY.md` para conocer las conexiones y los datos que utiliza la aplicación.
+
+## Corrección v11.1
+
+La carga inicial espera un primer grupo de hasta ocho portadas antes de mostrar resultados parciales. El cambio de destacado conserva la distribución del mosaico y las actualizaciones del catálogo conservan la identidad de cada portada aunque cambie el orden de descarga. Esta revisión necesita validación visual en el equipo donde se detectó el fallo.
