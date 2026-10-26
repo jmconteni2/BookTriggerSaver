@@ -68,7 +68,7 @@ try {
  IgnorableNamespaces="uap uap10 rescap">
  <Identity Name="J.M.Contenidos.BookTriggerSaver"
            Publisher="CN=3E8CA7B6-6E05-45F0-8BD7-37C8E925922D"
-           Version="11.5.0.4" ProcessorArchitecture="x64"/>
+           Version="11.5.0.5" ProcessorArchitecture="x64"/>
  <Properties>
   <DisplayName>BookTriggerSaver</DisplayName>
   <PublisherDisplayName>J.M. Contenidos</PublisherDisplayName>
@@ -92,7 +92,7 @@ try {
 </Package>
 '@
     [System.IO.File]::WriteAllText((Join-Path $layout "AppxManifest.xml"), $manifest, (New-Object System.Text.UTF8Encoding($false)))
-    $package = Join-Path $target "BookTriggerSaver_11.5.0.4_x64_unsigned.msix"
+    $package = Join-Path $target "BookTriggerSaver_11.5.0.5_x64_unsigned.msix"
     if (Test-Path $package) { Remove-Item $package -Force }
     & $makeappx.FullName pack /d $layout /p $package /o
     if ($LASTEXITCODE -ne 0) { throw "MakeAppx pack failed" }
