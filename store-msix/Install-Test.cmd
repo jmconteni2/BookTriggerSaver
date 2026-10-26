@@ -17,7 +17,7 @@ echo No es la version destinada a publicar.
 echo.
 choice /M "Quieres instalar esta version de prueba"
 if errorlevel 2 exit /b 0
-powershell.exe -NoProfile -ExecutionPolicy Bypass -Command "$ErrorActionPreference='Stop'; Import-Certificate -FilePath '.\BookTriggerSaver-TEST.cer' -CertStoreLocation 'Cert:\LocalMachine\TrustedPeople' | Out-Null; Add-AppxPackage -Path '.\BookTriggerSaver_11.5.0.1_x64_TEST_ONLY.msix' -ErrorAction Stop; Write-Host 'INSTALACION DE PRUEBA COMPLETADA' -ForegroundColor Green"
+powershell.exe -NoProfile -ExecutionPolicy Bypass -Command "$ErrorActionPreference='Stop'; Import-Certificate -FilePath '.\BookTriggerSaver-TEST.cer' -CertStoreLocation 'Cert:\LocalMachine\TrustedPeople' | Out-Null; Add-AppxPackage -Path '.\BookTriggerSaver_11.5.0.2_x64_TEST_ONLY.msix' -ErrorAction Stop; Write-Host 'INSTALACION DE PRUEBA COMPLETADA' -ForegroundColor Green"
 if errorlevel 1 (
  echo.
  echo La instalacion ha fallado. Haz una captura de la ventana.
