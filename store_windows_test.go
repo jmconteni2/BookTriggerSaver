@@ -40,3 +40,34 @@ func TestStoreSafePreviousExistingScreenSaver(t *testing.T) {
 	if stringOf(result.Values["SCRNSAVE.EXE"]) != path { t.Fatal("existing saver not retained") }
 	if stringOf(result.Values["ScreenSaveActive"]) != "1" { t.Fatal("existing saver deactivated") }
 }
+
+func TestStorePackageQueryInstalled(t *testing.T) {
+    tests := []struct { status uintptr; count uint32; installed bool; wantErr bool }{
+        {0, 0, false, false},
+        {0, 1, true, false},
+        {122, 1, true, false},
+        {122, 0, false, false},
+        {87, 0, false, true},
+        {1168, 0, false, true},
+    }
+    for _, tt := range tests {
+        got, err := storePackageQueryInstalled(tt.status, tt.count)
+        if got != tt.installed || (err != nil) != tt.wantErr {
+            t.Errorf("status=%d, count=%d => %v, %v; expected %v, err=%v", tt.status, tt.count, got, err, tt.installed, tt.wantErr)
+        }
+    }
+}
+
+func TestStoreFamilyValidation(t *testing.T) {
+    for _, family := range []string{
+        "J.M.Contenidos.BookTriggerSaver_abc",
+        "J.M.Contenidos.BookTriggerSaver_x123",
+    } {
+        if err := storeValidateFamily(family); err != nil { t.Fatal(err) }
+    }
+    for _, family := range []string{
+        "", "BookTriggerSaver_abc", "J.M.Contenidos.BookTriggerSaver_/evil", "J.M.Contenidos.BookTriggerSaver_..\\file",
+    } {
+        if err := storeValidateFamily(family); err == nil { t.Fatalf("accepted invalid family %q", family) }
+    }
+}
