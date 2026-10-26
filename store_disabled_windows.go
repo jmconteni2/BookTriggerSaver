@@ -7,3 +7,5 @@ const storeMode = false
 // These are never reached in a classic build; the release installer is unchanged.
 func storeDataDir() (string, error) { return appDir() }
 func storeMain(mode string, parent uintptr) error { return nil }
+
+func storeNativeHelper(args []string) (bool, error) { return false, nil }
