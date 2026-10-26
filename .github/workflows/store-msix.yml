@@ -21,6 +21,15 @@ jobs:
       - name: Build unsigned MSIX prototype
         shell: pwsh
         run: ./store-msix/Build-StorePrototype.ps1
+      - name: Create a separately signed local test package
+        shell: pwsh
+        run: ./store-msix/Make-TestPackage.ps1
+      - name: Upload locally installable test package
+        uses: actions/upload-artifact@v4
+        with:
+          name: BookTriggerSaver-MSIX-LOCAL-TEST-ONLY
+          path: dist/store-msix/test/*
+          if-no-files-found: error
       - name: Upload prototype for testing only
         uses: actions/upload-artifact@v4
         with:
