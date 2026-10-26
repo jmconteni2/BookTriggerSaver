@@ -248,6 +248,15 @@ func storeDeactivateNative() error {
         if err := restore(key, storeSafePrevious(previous)); err != nil { return err }
     }
     if err := os.Remove(backupPath); err != nil && !errors.Is(err, os.ErrNotExist) { return err }
+    // On a controlled restore the LocalState bootstrapper is running, so
+    // Windows can clean up the separate staged SCR. On direct uninstall,
+    // the fallback executes from that SCR itself: retain it to avoid a
+    // dangling reference or trying to delete a running executable.
+    executable, err := os.Executable()
+    if err == nil && !strings.EqualFold(executable, path) {
+        if err := os.Remove(path); err != nil && !errors.Is(err, os.ErrNotExist) { return err }
+        _ = os.Remove(filepath.Join(dir, "package-family.txt"))
+    }
     return nil
 }
 
