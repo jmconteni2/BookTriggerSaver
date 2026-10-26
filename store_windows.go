@@ -7,33 +7,84 @@ import (
     "errors"
     "fmt"
     "os"
+    "os/exec"
+    "strconv"
+    "time"
+    "unsafe"
     "path/filepath"
     "strings"
     "syscall"
 )
 
 const storeMode = true
+const storeHelperPrefix = "--store-helper-"
 
-// The Store edition uses its own data and never registers a classic uninstaller.
-func storeDataDir() (string, error) {
-    root, err := os.UserConfigDir()
-    if err != nil { return "", err }
-    return filepath.Join(root, "BookTriggerSaverStore"), nil
+// The Store application uses a stable, per-user LocalState directory.
+func currentPackageFamily() (string, error) {
+    p := kernel.NewProc("GetCurrentPackageFamilyName")
+    var n uint32
+    code, _, _ := p.Call(uintptr(unsafe.Pointer(&n)), 0)
+    if code != 122 || n < 2 || n > 1024 { return "", fmt.Errorf("No se pudo identificar el paquete MSIX (%d)", code) }
+    b := make([]uint16, n)
+    code, _, _ = p.Call(uintptr(unsafe.Pointer(&n)), uintptr(unsafe.Pointer(&b[0])))
+    if code != 0 { return "", fmt.Errorf("No se pudo leer la identidad MSIX (%d)", code) }
+    return syscall.UTF16ToString(b), nil
 }
 
-// Windows invokes the packaged .scr directly for screensaver, preview and settings.
-// Nothing is copied out of the MSIX package or installed to the classic app directory.
-func storeSaverPath() (string, error) {
+func storeLocalState(local, family string) (string, error) {
+    if local == "" || family == "" || strings.ContainsAny(family, "\\/:") { return "", errors.New("Carpeta de la aplicación no disponible") }
+    return filepath.Join(local, "Packages", family, "LocalState"), nil
+}
+
+func storeDataDir() (string, error) {
     exe, err := os.Executable()
     if err != nil { return "", err }
-    path := filepath.Join(filepath.Dir(exe), saverFile)
-    info, err := os.Stat(path)
-    if err != nil { return "", fmt.Errorf("No se encuentra el salvapantallas en el paquete: %w", err) }
-    if info.IsDir() { return "", errors.New("El salvapantallas del paquete no es un archivo") }
+    if strings.EqualFold(filepath.Ext(exe), ".scr") { return filepath.Dir(exe), nil }
+    family, err := currentPackageFamily()
+    if err != nil { return "", err }
+    return storeLocalState(os.Getenv("LOCALAPPDATA"), family)
+}
+
+func storeSaverPath() (string, error) {
+    d, err := storeDataDir()
+    if err != nil { return "", err }
+    return filepath.Join(d, saverFile), nil
+}
+
+// Windows' idle screensaver host must run a stable Win32 .scr, not a file
+// under the MSIX versioned WindowsApps directory.
+func storeStageSaver() (string, error) {
+    exe, err := os.Executable()
+    if err != nil { return "", err }
+    if strings.EqualFold(filepath.Ext(exe), ".scr") { return "", errors.New("La preparación debe abrirse desde BookTriggerSaver") }
+    data, err := os.ReadFile(filepath.Join(filepath.Dir(exe), saverFile))
+    if err != nil { return "", fmt.Errorf("No se encuentra BookTrigger.scr en el paquete: %w", err) }
+    dir, err := storeDataDir()
+    if err != nil { return "", err }
+    if err := os.MkdirAll(dir, 0700); err != nil { return "", err }
+    path := filepath.Join(dir, saverFile)
+    if err := atomicWrite(path, data); err != nil { return "", err }
     return path, nil
 }
 
+func storeRunHelper(args ...string) error {
+    path, err := storeSaverPath()
+    if err != nil { return err }
+    if err := exec.Command(path, args...).Run(); err != nil { return fmt.Errorf("Windows no completó la configuración: %w", err) }
+    return nil
+}
+
 func storeActive() (bool, error) {
+    path, err := storeStageSaver()
+    if err != nil { return false, err }
+    err = exec.Command(path, storeHelperPrefix+"check").Run()
+    if err == nil { return true, nil }
+    var exit *exec.ExitError
+    if errors.As(err, &exit) && exit.ExitCode() == 5 { return false, nil }
+    return false, fmt.Errorf("No se pudo comprobar el salvapantallas: %w", err)
+}
+
+func storeActiveNative() (bool, error) {
     path, err := storeSaverPath()
     if err != nil { return false, err }
     key, err := openKey(syscall.HKEY_CURRENT_USER, desktopKey, false)
@@ -46,10 +97,19 @@ func storeActive() (bool, error) {
 
 func storeActivate(seconds uint32) error {
     if seconds < 60 || seconds > 1800 { return errors.New("Tiempo de espera no válido") }
+    if _, err := storeStageSaver(); err != nil { return err }
+    return storeRunHelper(storeHelperPrefix+"activate", strconv.FormatUint(uint64(seconds), 10))
+}
+
+func storeActivateNative(seconds uint32) error {
+    if seconds < 60 || seconds > 1800 { return errors.New("Tiempo de espera no válido") }
     if err := checkPolicy(); err != nil { return err }
-    path, err := storeSaverPath()
-    if err != nil { return err }
     dir, err := storeDataDir()
+    if err != nil { return err }
+    path := filepath.Join(dir, saverFile)
+    if _, err := os.Stat(path); err != nil { return fmt.Errorf("Falta BookTrigger.scr: %w", err) }
+    // Existing backup stays untouched while the packaged app is upgraded.
+    // Previous selected saver is restored only when BookTrigger is still active.
     if err != nil { return err }
     if err := os.MkdirAll(dir, 0700); err != nil { return err }
 
@@ -83,6 +143,23 @@ func storeActivate(seconds uint32) error {
 }
 
 func storeDeactivate() error {
+    if _, err := storeStageSaver(); err != nil { return err }
+    return storeRunHelper(storeHelperPrefix+"deactivate")
+}
+
+// Do not reactivate a previously removed classic screensaver on uninstall.
+func storeSafePrevious(old backup) backup {
+    path := stringOf(old.Values["SCRNSAVE.EXE"])
+    if path != "" {
+        if info, err := os.Stat(path); err != nil || info.IsDir() {
+            old.Values["SCRNSAVE.EXE"] = regValue{}
+            old.Values["ScreenSaveActive"] = stringValue("0")
+        }
+    }
+    return old
+}
+
+func storeDeactivateNative() error {
     dir, err := storeDataDir()
     if err != nil { return err }
     path, err := storeSaverPath()
@@ -102,16 +179,50 @@ func storeDeactivate() error {
         if json.Unmarshal(raw, &previous) != nil || previous.Version != 1 || len(previous.Values) != len(settings) {
             return errors.New("La copia anterior está dañada; no se cambiarán los ajustes")
         }
-        if err := restore(key, previous); err != nil { return err }
+        if err := restore(key, storeSafePrevious(previous)); err != nil { return err }
     }
     if err := os.Remove(backupPath); err != nil && !errors.Is(err, os.ErrNotExist) { return err }
     message("BookTrigger está desactivado. Ya puedes desinstalarlo desde Microsoft Store o Configuración de Windows.", 0x40)
     return nil
 }
 
+// Helpers run from the staged, unpackaged .scr so the Windows shell and
+// the configurator observe the same HKCU/Desktop state.
+func storeNativeHelper(args []string) (bool, error) {
+    if len(args) == 0 || !strings.HasPrefix(args[0], storeHelperPrefix) { return false, nil }
+    exe, err := os.Executable()
+    if err != nil { return true, err }
+    if !strings.EqualFold(filepath.Ext(exe), ".scr") { return true, errors.New("El ayudante debe ser BookTrigger.scr") }
+    switch strings.TrimPrefix(args[0], storeHelperPrefix) {
+    case "check":
+        active, err := storeActiveNative()
+        if err != nil { return true, err }
+        if !active { os.Exit(5) }
+        return true, nil
+    case "activate":
+        if len(args) != 2 { return true, errors.New("Tiempo de activación ausente") }
+        n, err := strconv.ParseUint(args[1], 10, 32)
+        if err != nil { return true, err }
+        return true, storeActivateNative(uint32(n))
+    case "deactivate":
+        return true, storeDeactivateNative()
+    }
+    return true, errors.New("Orden no reconocida")
+}
+
+func storeLogSaverStart() {
+    dir, err := storeDataDir()
+    if err != nil { return }
+    f, err := os.OpenFile(filepath.Join(dir, "inicio_salvapantallas.log"), os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0600)
+    if err != nil { return }
+    defer f.Close()
+    fmt.Fprintf(f, "%s Inicio SCR pid=%d\n", time.Now().Format(time.RFC3339), os.Getpid())
+}
+
 func storeMain(mode string, parent uintptr) error {
     switch mode {
     case "saver", "preview":
+        if mode == "saver" { storeLogSaverStart() }
         return runEngine(mode, parent)
     case "invalid-preview":
         return nil
