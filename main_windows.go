@@ -618,6 +618,12 @@ func uninstall() error {
 }
 func main() {
 	runtime.LockOSThread()
+	if storeMode {
+		if handled, err := storeNativeHelper(os.Args[1:]); handled {
+			if err != nil { logError(err); os.Exit(1) }
+			return
+		}
+	}
 	mode, parent := parseMode(os.Args[1:], strings.EqualFold(filepath.Ext(os.Args[0]), ".scr"))
 	if storeMode {
 		if err := storeMain(mode, parent); err != nil {
