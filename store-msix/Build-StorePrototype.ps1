@@ -33,22 +33,31 @@ try {
     Copy-Item (Join-Path $target "BookTriggerSaver.exe") (Join-Path $layout "BookTrigger.scr") -Force
 
     Add-Type -AssemblyName System.Drawing
-    $source = [System.Drawing.Image]::FromFile((Join-Path $root "assets\logo.png"))
-    try {
-        foreach ($size in @(44, 150, 50)) {
-            $bitmap = New-Object System.Drawing.Bitmap($size, $size)
+    # Use the exact icon embedded in the original EXE (winres RT_GROUP_ICON).
+    # assets/logo.png is the J.M. Pocket artwork, NOT the BookTriggerSaver icon.
+    $iconFile = Join-Path $root "winres\#1_0000.ico"
+    if (-not (Test-Path -LiteralPath $iconFile)) { throw "Original BookTriggerSaver .ico was not found: $iconFile" }
+    foreach ($size in @(44, 150, 50)) {
+        $requestedSize = [System.Drawing.Size]::new($size, $size)
+        $sourceIcon = [System.Drawing.Icon]::new($iconFile, $requestedSize)
+        try {
+            $iconBitmap = $sourceIcon.ToBitmap()
             try {
-                $g = [System.Drawing.Graphics]::FromImage($bitmap)
+                $bitmap = [System.Drawing.Bitmap]::new($size, $size)
                 try {
-                    $g.Clear([System.Drawing.Color]::Transparent)
-                    $g.InterpolationMode = [System.Drawing.Drawing2D.InterpolationMode]::HighQualityBicubic
-                    $g.DrawImage($source, 0, 0, $size, $size)
-                } finally { $g.Dispose() }
-                $name = switch ($size) { 44 {"Square44x44Logo.png"} 150 {"Square150x150Logo.png"} 50 {"StoreLogo.png"} }
-                $bitmap.Save((Join-Path $layout "Assets\$name"), [System.Drawing.Imaging.ImageFormat]::Png)
-            } finally { $bitmap.Dispose() }
-        }
-    } finally { $source.Dispose() }
+                    $g = [System.Drawing.Graphics]::FromImage($bitmap)
+                    try {
+                        $g.Clear([System.Drawing.Color]::Transparent)
+                        $g.InterpolationMode = [System.Drawing.Drawing2D.InterpolationMode]::HighQualityBicubic
+                        $g.PixelOffsetMode = [System.Drawing.Drawing2D.PixelOffsetMode]::HighQuality
+                        $g.DrawImage($iconBitmap, 0, 0, $size, $size)
+                    } finally { $g.Dispose() }
+                    $name = switch ($size) { 44 {"Square44x44Logo.png"} 150 {"Square150x150Logo.png"} 50 {"StoreLogo.png"} }
+                    $bitmap.Save((Join-Path $layout "Assets\$name"), [System.Drawing.Imaging.ImageFormat]::Png)
+                } finally { $bitmap.Dispose() }
+            } finally { $iconBitmap.Dispose() }
+        } finally { $sourceIcon.Dispose() }
+    }
 
     $manifest = @'
 <?xml version="1.0" encoding="utf-8"?>
@@ -59,7 +68,7 @@ try {
  IgnorableNamespaces="uap uap10 rescap">
  <Identity Name="J.M.Contenidos.BookTriggerSaver"
            Publisher="CN=3E8CA7B6-6E05-45F0-8BD7-37C8E925922D"
-           Version="11.5.0.1" ProcessorArchitecture="x64"/>
+           Version="11.5.0.2" ProcessorArchitecture="x64"/>
  <Properties>
   <DisplayName>BookTriggerSaver</DisplayName>
   <PublisherDisplayName>J.M. Contenidos</PublisherDisplayName>
@@ -83,7 +92,7 @@ try {
 </Package>
 '@
     [System.IO.File]::WriteAllText((Join-Path $layout "AppxManifest.xml"), $manifest, (New-Object System.Text.UTF8Encoding($false)))
-    $package = Join-Path $target "BookTriggerSaver_11.5.0.1_x64_unsigned.msix"
+    $package = Join-Path $target "BookTriggerSaver_11.5.0.2_x64_unsigned.msix"
     if (Test-Path $package) { Remove-Item $package -Force }
     & $makeappx.FullName pack /d $layout /p $package /o
     if ($LASTEXITCODE -ne 0) { throw "MakeAppx pack failed" }
