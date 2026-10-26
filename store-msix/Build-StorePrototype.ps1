@@ -14,12 +14,20 @@ try {
     & (Join-Path $root "Build.ps1") -Output (Join-Path $target "BookTriggerSaver.exe")
     if ($LASTEXITCODE -ne 0) { throw "Compilation failed" }
 
+    # Build a separate Store-only executable. The public GitHub build remains untouched.
+    & go build -tags store -buildvcs=false -trimpath -ldflags "-H=windowsgui -s -w" -o (Join-Path $target "BookTriggerSaver.exe") .
+    if ($LASTEXITCODE -ne 0) { throw "Store-edition compilation failed" }
+    & go test -tags store -count=1 ./...
+    if ($LASTEXITCODE -ne 0) { throw "Store-edition tests failed" }
+
     $makeappx = Get-ChildItem "${env:ProgramFiles(x86)}\Windows Kits\10\bin" -Filter makeappx.exe -Recurse -ErrorAction SilentlyContinue |
         Where-Object { $_.FullName -match '\\x64\\makeappx\.exe$' } |
         Sort-Object FullName -Descending | Select-Object -First 1
     if (-not $makeappx) { throw "Windows SDK MakeAppx.exe was not found." }
 
     Copy-Item (Join-Path $target "BookTriggerSaver.exe") (Join-Path $layout "BookTriggerSaver.exe") -Force
+    # Keep the screensaver inside the package; never copy the classic installer.
+    Copy-Item (Join-Path $target "BookTriggerSaver.exe") (Join-Path $layout "BookTrigger.scr") -Force
 
     Add-Type -AssemblyName System.Drawing
     $source = [System.Drawing.Image]::FromFile((Join-Path $root "assets\logo.png"))
@@ -76,6 +84,13 @@ try {
     if (Test-Path $package) { Remove-Item $package -Force }
     & $makeappx.FullName pack /d $layout /p $package /o
     if ($LASTEXITCODE -ne 0) { throw "MakeAppx pack failed" }
-    Write-Host "Created: $package"
+    # Confirm both entry points survived packaging.
+    $verify = Join-Path $target "verify"
+    & $makeappx.FullName unpack /p $package /d $verify /o
+    if ($LASTEXITCODE -ne 0) { throw "MSIX unpack verification failed" }
+    foreach ($name in @("BookTriggerSaver.exe", "BookTrigger.scr", "AppxManifest.xml", "Assets\\StoreLogo.png")) {
+        if (-not (Test-Path (Join-Path $verify $name))) { throw "Required MSIX entry missing: $name" }
+    }
+    Write-Host "Created and verified: $package"
     Write-Warning "PROTOTYPE ONLY. Uninstall/activation and Store validation are NOT yet verified."
 } finally { Pop-Location }
