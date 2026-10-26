@@ -1,4 +1,4 @@
-# BookTriggerSaver — Microsoft Store (prototipo v11.5.0.3)
+# BookTriggerSaver — Microsoft Store (prototipo v11.5.0.4)
 
 Rama aislada `store-msix-prototype`; la versión pública de GitHub, en `main`, no se modifica.
 
@@ -13,7 +13,7 @@ Rama aislada `store-msix-prototype`; la versión pública de GitHub, en `main`, 
 
 Desde 11.5.0.2 los recursos gráficos del paquete MSIX se generan desde el ICO original `winres/#1_0000.ico`, no desde el logo de J.M. Pocket. Aún necesita validación visual en el equipo del usuario.
 
-## Nuevo mecanismo de recuperación (experimental 11.5.0.3)
+## Nuevo mecanismo de recuperación (experimental 11.5.0.4)
 
 MSIX no permite lanzar arbitrariamente un desinstalador propio al quitar la aplicación desde Windows. Si el archivo `.scr` reside en `LocalState`, al borrar los datos del paquete puede quedar una referencia `SCRNSAVE.EXE` rota.
 
