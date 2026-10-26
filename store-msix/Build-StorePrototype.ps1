@@ -105,10 +105,7 @@ try {
     }
     [xml]$verifiedManifest = Get-Content -LiteralPath (Join-Path $verify "AppxManifest.xml") -Raw
     $verifiedVersion = [string]$verifiedManifest.Package.Identity.Version
-    if ($verifiedVersion -notmatch '^\d+\.\d+\.\d+\.0
-    Write-Warning "PROTOTYPE ONLY. Uninstall/activation and Store validation are NOT yet verified."
-} finally { Pop-Location }
-) { throw "Microsoft Store requires a zero revision component: $verifiedVersion" }
+    if ($verifiedVersion -notmatch '^\d+\.\d+\.\d+\.0$') { throw "Microsoft Store requires a zero revision component: $verifiedVersion" }
     Write-Host "Created and verified: $package"
     Write-Warning "PROTOTYPE ONLY. Uninstall/activation and Store validation are NOT yet verified."
 } finally { Pop-Location }
