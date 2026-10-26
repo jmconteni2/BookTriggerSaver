@@ -86,19 +86,21 @@ func storePreparePersistent(family string) error {
 
 // Query current-user installation from Windows, not a marker written by
 // the packaged app. A missing MSIX can then be detected by the retained SCR.
+// The documented initial query returns insufficient-buffer for a matching
+// installed package and success/zero-count if none is installed.
+func storePackageQueryInstalled(status uintptr, count uint32) (bool, error) {
+    switch status {
+    case 0, 122: return count > 0, nil
+    default: return false, fmt.Errorf("No se pudo comprobar la instalación MSIX (%d)", status)
+    }
+}
+
 func storePackageInstalled(family string) (bool, error) {
     if err := storeValidateFamily(family); err != nil { return false, err }
     var count, size uint32
     p := kernel.NewProc("GetPackagesByPackageFamily")
     status, _, _ := p.Call(ptr(family), uintptr(unsafe.Pointer(&count)), 0, uintptr(unsafe.Pointer(&size)), 0)
-    switch status {
-    case 0: // ERROR_SUCCESS; no matching packages when count is zero
-        return count > 0, nil
-    case 122: // ERROR_INSUFFICIENT_BUFFER: at least one installed package
-        return count > 0, nil
-    default:
-        return false, fmt.Errorf("No se pudo comprobar la instalación MSIX (%d)", status)
-    }
+    return storePackageQueryInstalled(status, count)
 }
 
 // If Windows launched the retained SCR after direct MSIX uninstall,
@@ -246,7 +248,6 @@ func storeDeactivateNative() error {
         if err := restore(key, storeSafePrevious(previous)); err != nil { return err }
     }
     if err := os.Remove(backupPath); err != nil && !errors.Is(err, os.ErrNotExist) { return err }
-    message("BookTrigger está desactivado. Ya puedes desinstalarlo desde Microsoft Store o Configuración de Windows.", 0x40)
     return nil
 }
 
@@ -300,7 +301,9 @@ func storeMain(mode string, parent uintptr) error {
         if err != nil { return err }
         if active {
             if dialog("BookTrigger", "Salvapantallas activo", "BookTrigger está seleccionado. Puedes cambiar el tiempo de espera o restaurar el salvapantallas que tenías antes. Para desinstalar la edición Microsoft Store, desactívala primero.", "Desactivar y restaurar") {
-                return storeDeactivate()
+                if err := storeDeactivate(); err != nil { return err }
+                message("BookTrigger se ha desactivado y se ha restaurado la configuración anterior.", 0x40)
+                return nil
             }
         }
         seconds, ok := installOptions()
@@ -310,7 +313,9 @@ func storeMain(mode string, parent uintptr) error {
         return nil
     case "uninstall":
         if dialog("BookTrigger", "Desactivar BookTrigger", "Se restaurará el salvapantallas anterior. Después puedes quitar la aplicación desde Configuración de Windows.", "Desactivar y restaurar") {
-            return storeDeactivate()
+            if err := storeDeactivate(); err != nil { return err }
+            message("BookTrigger se ha desactivado y se ha restaurado la configuración anterior.", 0x40)
+            return nil
         }
         return nil
     default:
