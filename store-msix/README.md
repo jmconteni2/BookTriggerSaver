@@ -1,37 +1,33 @@
-# BookTriggerSaver — Microsoft Store (experimental branch)
+# BookTriggerSaver — edición Microsoft Store (prototipo separado)
 
-This branch is deliberately isolated from the published v11.5 GitHub release and its signed installer.
+Esta rama NO sustituye la publicación v11.5 de GitHub ni modifica su instalador autofirmado.
 
-## Progress
+## Qué prepara esta rama
 
-- Reusable Windows SDK packaging script: `store-msix/Build-StorePrototype.ps1`.
-- Exact Microsoft Store package identity and publisher.
-- Executable application entry point (the previous capture-based package had none).
-- Classic desktop/full-trust MSIX declaration, with bundled logos.
-- New build from Go source rather than copying user-specific AppData, logs, cached covers or browser files.
-- Package remains **unsigned** for eventual Partner Center processing.
+- Compilación independiente con la etiqueta de Go `store`, sin el instalador clásico, su registro de desinstalación ni la copia tradicional de `.scr` en AppData.
+- MSIX con `BookTriggerSaver.exe` (interfaz) y `BookTrigger.scr` (motor para Windows). Ambos se generan desde las fuentes de esta rama.
+- Datos y caché separados en `BookTriggerSaverStore`.
+- Antes de activarse se guarda el estado anterior del salvapantallas. La aplicación ofrece **Desactivar y restaurar**, que recupera la configuración si aún está seleccionada.
+- El flujo automatizado comprueba la compilación de la edición Store, empaqueta el MSIX sin firmar y verifica que contiene ambos ejecutables y el manifiesto.
 
-## Important: not ready for publication
+## Limitaciones que impiden publicar todavía
 
-The existing Go executable runs its own installer, writes `%APPDATA%\JMPocketSalvapantallas`, changes `HKCU\Control Panel\Desktop` screensaver settings and registers its own uninstaller. A Store-installed MSIX has a different lifecycle. In particular, removing the MSIX may leave a selected `.scr` path to a file that has disappeared, and cached files may be redirected by package virtualization. These behaviors need actual testing and source changes before release.
+**MUY IMPORTANTE: el paquete es experimental, no está listo para Microsoft Store.**
 
-Before publishing:
-1. Test the package on Windows, including first launch, activation, preview, screen timeout and opening books.
-2. Verify catalog / covers downloading and cache across relaunch and version updates.
-3. Implement safe uninstall/reset of the Windows screensaver setting for the MSIX lifecycle, without disturbing the classic GitHub installer.
-4. Test upgrading and removing the MSIX on an isolated Windows account or VM.
-5. Validate with Windows App Certification Kit and Partner Center ingestion.
+1. Windows MSIX no ejecuta una acción de desinstalación personalizada. Si el usuario quita la aplicación directamente sin desactivarla primero, podría quedar en el registro un `SCRNSAVE.EXE` que apunta a un archivo eliminado. **La desactivación manual actual no es una solución definitiva.**
+2. Las actualizaciones MSIX pueden instalar el paquete en una ruta versionada nueva. La selección anterior del `.scr` podría apuntar a la versión retirada. Necesita resolverse antes de publicar.
+3. Falta verificar en una instalación Windows real si el sistema puede arrancar y previsualizar el `.scr` desde el directorio del paquete, incluido acceso a recursos, caché, enlaces y prevención de múltiples instancias.
+4. Hay que validar la identidad del paquete con Partner Center, las capacidades restringidas y la certificación de Windows. La firma gratuita de Microsoft solo llega **después de aprobar la publicación**, no convierte un prototipo en instalador listo para utilizar.
+5. El archivo MSIX que entrega GitHub permanece sin firma. **No instalarlo directamente** como si fuera un paquete de producción.
 
-Do **not** merge this branch or upload the prototype as a production Store package before those checks.
+## Compilar y revisar
 
-## Build (Windows)
+Al modificar esta rama, GitHub Actions ejecuta `.github/workflows/store-msix.yml`. El artefacto de pruebas se llama `BookTriggerSaver-MSIX-EXPERIMENTAL-NOT-FOR-PUBLICATION`.
 
-Requires working Go toolchain, repository source, and Windows SDK with MakeAppx. Run PowerShell from the repository root:
+Para compilar en un entorno Windows con Go y Windows SDK:
 
 ```powershell
 .\store-msix\Build-StorePrototype.ps1
 ```
 
-Expected prototype output: `dist/store-msix/BookTriggerSaver_11.5.0.0_x64_unsigned.msix`.
-
-The production installer already published on GitHub is not modified by this script.
+La versión pública firmada de GitHub se mantiene intacta.
