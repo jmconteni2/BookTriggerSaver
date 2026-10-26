@@ -1,32 +1,33 @@
-# BookTriggerSaver — edición Microsoft Store (rama experimental)
+# BookTriggerSaver — Microsoft Store (prototipo v11.5.0.3)
 
-La rama `store-msix-prototype` está separada de `main`. **No modifica el instalador público v11.5.**
+Rama aislada `store-msix-prototype`; la versión pública de GitHub, en `main`, no se modifica.
 
-## Estado real comprobado (26 de octubre de 2026)
+## Verificado en Windows por el usuario: versión 11.5.0.1
 
-- El usuario instaló el MSIX de prueba 11.5.0.1 con certificado temporal.
-- Activación automática de Windows al minuto: funciona en su equipo.
-- Movimiento del ratón para cerrar, reactivación automática y apertura de fichas con Intro: comprobados.
-- «Desactivar y restaurar» y desinstalación desde Configuración de Windows: comprobados.
-- Los iconos MSIX se generaban por error desde `assets/logo.png` (J.M. Pocket), mientras que el EXE original utiliza `winres/#1_0000.ico`. Corregido desde 11.5.0.2.
-- No se ha comprobado todavía en la máquina del usuario que el nuevo icono aparezca en Inicio; la validación automatizada solo verifica el empaquetado.
+- Instalación MSIX con firma temporal de prueba.
+- Activación automática de Windows al minuto y cierre por movimiento de ratón.
+- Reaparición tras un nuevo minuto de inactividad.
+- Portadas, interacción por Intro y enlaces correctos.
+- Desactivar y restaurar desde la aplicación; posteriormente, desinstalación desde Configuración.
+- Retirada de dos certificados temporales de prueba.
 
-## Arquitectura
+Desde 11.5.0.2 los recursos gráficos del paquete MSIX se generan desde el ICO original `winres/#1_0000.ico`, no desde el logo de J.M. Pocket. Aún necesita validación visual en el equipo del usuario.
 
-El MSIX lleva `BookTriggerSaver.exe` y `BookTrigger.scr`. La interfaz instalada empaquetada almacena una copia estable del `.scr` en `LocalState` del paquete e invoca un ejecutable auxiliar sin virtualización del registro para configurar realmente el salvapantallas de Windows. El tiempo, selección y estado anteriores se conservan en `configuracion_anterior.json`.
+## Nuevo mecanismo de recuperación (experimental 11.5.0.3)
 
-La compilación MSIX ejecuta las pruebas específicas de Store, `go vet` y verifica los ejecutables y los recursos incluidos. Los iconos del menú Inicio y Store se generan desde el archivo ICO original del programa.
+MSIX no permite lanzar arbitrariamente un desinstalador propio al quitar la aplicación desde Windows. Si el archivo `.scr` reside en `LocalState`, al borrar los datos del paquete puede quedar una referencia `SCRNSAVE.EXE` rota.
 
-## Artefactos del flujo de GitHub
+Como prueba técnica, un ayudante Win32 sin empaquetar guarda una copia `BookTrigger.scr` y una copia de seguridad de los ajustes en `%LOCALAPPDATA%\BookTriggerSaverStore`. Se guarda también la identidad exacta de familia MSIX. En su siguiente ejecución, el `.scr` comprueba con `GetPackagesByPackageFamily` si la app continúa instalada. Si no lo está, restaura los valores previos, no muestra el salvapantallas y termina. La desactivación voluntaria restaura y elimina los archivos externos cuando no están abiertos.
 
-- **BookTriggerSaver-MSIX-LOCAL-TEST-ONLY**: ZIP firmado con certificado autofirmado temporal. Solo para pruebas locales, incluye `INSTALAR-PRUEBA.cmd`, `COMPROBAR-ACTIVACION.cmd`, `RETIRAR-PRUEBA.cmd` y `LIMPIAR-CERTIFICADOS-PRUEBA.cmd`.
-- **BookTriggerSaver-MSIX-EXPERIMENTAL-NOT-FOR-PUBLICATION**: contiene el MSIX sin firmar, candidato a enviar por Partner Center solo una vez resueltas las limitaciones pendientes.
+**Este mecanismo no restaura la configuración inmediatamente en el momento de desinstalar**: lo hace en el siguiente arranque del `.scr`, o ejecutando `COMPROBAR-RETIRADA-DIRECTA.cmd`. Los archivos de salvaguarda podrían permanecer después de una desinstalación directa hasta su limpieza. El flujo es experimental y también hay que verificar si Microsoft acepta la copia del ejecutable fuera del paquete en la certificación.
 
-## Pendientes antes de Microsoft Store
+## Prueba de desinstalación directa pendiente
 
-1. **Desinstalación directa**: MSIX no ejecuta desinstaladores personalizados. El usuario puede desinstalar desde Configuración sin abrir «Desactivar y restaurar». Esto podría dejar `SCRNSAVE.EXE` apuntando a un archivo eliminado. Debe solucionarse o someterse a evaluación expresa antes de publicar.
-2. **Actualización y limpieza**: verificar que los archivos `.scr` en `LocalState` se actualizan de forma segura y que no permanecen restos tras retirar el paquete.
-3. Verificar con Partner Center que la identidad `Name` y el `Publisher` del manifiesto corresponden exactamente a la reserva real del producto, y justificar `runFullTrust` en certificación.
-4. Validar la publicación y las políticas de Microsoft Store. La compilación y la prueba local no garantizan la aprobación.
+1. Descargar el artefacto `BookTriggerSaver-MSIX-LOCAL-TEST-ONLY` del flujo más reciente. Descomprimir.
+2. Ejecutar `INSTALAR-PRUEBA.cmd` y activar el salvapantallas como en la primera prueba.
+3. Verificar que aparece automáticamente al minuto.
+4. **Sin usar «Desactivar y restaurar»**, desinstalar BookTriggerSaver desde Configuración > Aplicaciones. Esto simula el problema real.
+5. Ejecutar `COMPROBAR-RETIRADA-DIRECTA.cmd` desde el ZIP para forzar el siguiente arranque del `.scr` y verificar si Windows dejó de señalarlo.
+6. Ejecutar `LIMPIAR-CERTIFICADOS-PRUEBA.cmd` para eliminar el certificado de esta nueva prueba.
 
-**El paquete publicado en Microsoft Store recibirá la firma de Microsoft. No requiere comprar certificado propio para distribuirlo dentro de la Store.** No subir la versión firmada para pruebas ni divulgar el certificado temporal.
+No publicar hasta superar la prueba anterior, verificar actualizaciones MSIX, revisar identidad Name/Publisher en Partner Center y aprobar certificación. La firma MSIX de Microsoft se aplicará durante la distribución Store, no a una copia aislada del `.scr` ni al EXE clásico.
