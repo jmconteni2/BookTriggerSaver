@@ -90,6 +90,7 @@ func storePreparePersistent(family string) error {
 // installed package and success/zero-count if none is installed.
 func storePackageQueryInstalled(status uintptr, count uint32) (bool, error) {
     switch status {
+    case 15700: return false, nil // APPMODEL_ERROR_NO_PACKAGE: no package installed
     case 0, 122: return count > 0, nil
     default: return false, fmt.Errorf("No se pudo comprobar la instalación MSIX (%d)", status)
     }
