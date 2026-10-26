@@ -6,6 +6,11 @@ on:
       - store-msix-prototype
     paths:
       - 'store-msix/**'
+      - 'store_windows.go'
+      - 'store_windows_test.go'
+      - 'store_disabled_windows.go'
+      - 'main_windows.go'
+      - 'purchase_trace_windows.go'
       - '.github/workflows/store-msix.yml'
 permissions:
   contents: read
