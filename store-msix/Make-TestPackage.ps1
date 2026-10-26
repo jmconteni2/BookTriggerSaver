@@ -28,5 +28,6 @@ try {
     }
     Copy-Item (Join-Path $PSScriptRoot "Install-Test.cmd") (Join-Path $target "INSTALAR-PRUEBA.cmd") -Force
     Copy-Item (Join-Path $PSScriptRoot "Remove-Test.cmd") (Join-Path $target "RETIRAR-PRUEBA.cmd") -Force
+    Copy-Item (Join-Path $PSScriptRoot "Diagnose-Test.cmd") (Join-Path $target "COMPROBAR-ACTIVACION.cmd") -Force
     Write-Host "Local-only signed test package and public test certificate created."
 } finally { Pop-Location }
