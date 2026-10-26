@@ -1,0 +1,29 @@
+name: Experimental MSIX package
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - store-msix-prototype
+    paths:
+      - 'store-msix/**'
+      - '.github/workflows/store-msix.yml'
+permissions:
+  contents: read
+jobs:
+  msix-prototype:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-go@v6
+        with:
+          go-version: '1.27.3'
+          cache: false
+      - name: Build unsigned MSIX prototype
+        shell: pwsh
+        run: ./store-msix/Build-StorePrototype.ps1
+      - name: Upload prototype for testing only
+        uses: actions/upload-artifact@v4
+        with:
+          name: BookTriggerSaver-MSIX-EXPERIMENTAL-NOT-FOR-PUBLICATION
+          path: dist/store-msix/*.msix
+          if-no-files-found: error
