@@ -624,6 +624,7 @@ func main() {
 			return
 		}
 	}
+	if storeMode && captureLauncher() { return }
 	mode, parent := parseMode(os.Args[1:], strings.EqualFold(filepath.Ext(os.Args[0]), ".scr"))
 	if storeMode {
 		if err := storeMain(mode, parent); err != nil {

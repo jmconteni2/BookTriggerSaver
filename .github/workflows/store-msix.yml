@@ -10,6 +10,8 @@ on:
       - 'store_windows_test.go'
       - 'store_disabled_windows.go'
       - 'main_windows.go'
+      - 'saver_windows.go'
+      - 'capture_*.go'
       - 'purchase_trace_windows.go'
       - '.github/workflows/store-msix.yml'
 permissions:
@@ -34,6 +36,19 @@ jobs:
         with:
           name: BookTriggerSaver-MSIX-LOCAL-TEST-ONLY
           path: dist/store-msix/test/*
+          if-no-files-found: error
+      - name: Build independent screenshot utility (not part of Store package)
+        shell: pwsh
+        run: |
+          New-Item -ItemType Directory -Force -Path dist/store-msix/capturas | Out-Null
+          go build -tags "store,capture" -buildvcs=false -trimpath -ldflags "-H=windowsgui -s -w" -o dist/store-msix/capturas/BookTriggerCapturas.exe .
+          if ($LASTEXITCODE -ne 0) { throw "Screenshot utility compilation failed" }
+          Copy-Item store-msix/CAPTURAR-BOOKTRIGGERSAVER.cmd dist/store-msix/capturas/CAPTURAR-BOOKTRIGGERSAVER.cmd
+      - name: Upload independent screenshot utility
+        uses: actions/upload-artifact@v4
+        with:
+          name: BookTriggerSaver-CAPTURAS-AUTOMATICAS
+          path: dist/store-msix/capturas/*
           if-no-files-found: error
       - name: Upload prototype for testing only
         uses: actions/upload-artifact@v4
