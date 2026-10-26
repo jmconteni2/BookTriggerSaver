@@ -1,4 +1,4 @@
-# BookTriggerSaver — Microsoft Store (prototipo v11.5.0.5)
+# BookTriggerSaver — Microsoft Store (prototipo v11.5.1.0)
 
 Rama aislada `store-msix-prototype`; la versión pública de GitHub, en `main`, no se modifica.
 
@@ -31,3 +31,7 @@ Como prueba técnica, un ayudante Win32 sin empaquetar guarda una copia `BookTri
 6. Ejecutar `LIMPIAR-CERTIFICADOS-PRUEBA.cmd` para eliminar el certificado de esta nueva prueba.
 
 No publicar hasta superar la prueba anterior, verificar actualizaciones MSIX, revisar identidad Name/Publisher en Partner Center y aprobar certificación. La firma MSIX de Microsoft se aplicará durante la distribución Store, no a una copia aislada del `.scr` ni al EXE clásico.
+
+## Versionado para Partner Center
+
+El primer intento de carga del paquete 11.5.0.5 fue rechazado porque Microsoft Store exige que el cuarto componente de `Package/Identity/Version` sea `0`. Desde esta revisión se publica `11.5.1.0`. La capacidad `runFullTrust` se conserva porque es una aplicación de escritorio de confianza completa; Microsoft exige justificarla en las opciones de envío y someterla a revisión. No eliminar esta capacidad para ocultar la advertencia.
