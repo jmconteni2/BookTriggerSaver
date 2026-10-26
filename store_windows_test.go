@@ -47,6 +47,7 @@ func TestStorePackageQueryInstalled(t *testing.T) {
         {0, 1, true, false},
         {122, 1, true, false},
         {122, 0, false, false},
+        {15700, 0, false, false},
         {87, 0, false, true},
         {1168, 0, false, true},
     }
