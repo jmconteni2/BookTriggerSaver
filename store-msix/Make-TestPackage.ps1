@@ -5,11 +5,11 @@ Set-StrictMode -Version Latest
 Push-Location (Split-Path -Parent $PSScriptRoot)
 try {
     $output = Join-Path (Get-Location).Path "dist/store-msix"
-    $source = Join-Path $output "BookTriggerSaver_11.5.0.0_x64_unsigned.msix"
+    $source = Join-Path $output "BookTriggerSaver_11.5.0.1_x64_unsigned.msix"
     if (-not (Test-Path $source)) { throw "First build the unsigned Store MSIX." }
     $target = Join-Path $output "test"
     New-Item -ItemType Directory -Path $target -Force | Out-Null
-    $msix = Join-Path $target "BookTriggerSaver_11.5.0.0_x64_TEST_ONLY.msix"
+    $msix = Join-Path $target "BookTriggerSaver_11.5.0.1_x64_TEST_ONLY.msix"
     Copy-Item $source $msix -Force
 
     $publisher = "CN=3E8CA7B6-6E05-45F0-8BD7-37C8E925922D"
