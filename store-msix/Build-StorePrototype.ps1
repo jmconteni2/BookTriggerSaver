@@ -18,8 +18,8 @@ try {
     & go build -tags store -buildvcs=false -trimpath -ldflags "-H=windowsgui -s -w" -o (Join-Path $target "BookTriggerSaver.exe") .
     if ($LASTEXITCODE -ne 0) { throw "Store-edition compilation failed" }
     # The classic builder already executes Windows GUI tests.
-    # Compile/check the Store variant without rerunning flaky GDI+ GUI tests.
-    & go test -tags store -run '^$' ./...
+    # Execute Store lifecycle unit tests without rerunning flaky GDI+ GUI tests.
+    & go test -tags store -run '^TestStore' -count=1 ./...
     if ($LASTEXITCODE -ne 0) { throw "Store-edition compilation checks failed" }
     & go vet -tags store ./...
     if ($LASTEXITCODE -ne 0) { throw "Store-edition static analysis failed" }
