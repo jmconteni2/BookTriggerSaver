@@ -27,5 +27,6 @@ try {
         Remove-Item ("Cert:\CurrentUser\My\" + $certificate.Thumbprint) -ErrorAction SilentlyContinue
     }
     Copy-Item (Join-Path $PSScriptRoot "Install-Test.cmd") (Join-Path $target "INSTALAR-PRUEBA.cmd") -Force
+    Copy-Item (Join-Path $PSScriptRoot "Remove-Test.cmd") (Join-Path $target "RETIRAR-PRUEBA.cmd") -Force
     Write-Host "Local-only signed test package and public test certificate created."
 } finally { Pop-Location }
