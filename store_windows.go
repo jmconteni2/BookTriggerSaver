@@ -137,7 +137,7 @@ func storeStageSaver() (string, error) {
 }
 
 func storeRunHelper(args ...string) error {
-    path, err := storeSaverPath()
+    path, err := storeStageSaver()
     if err != nil { return err }
     if err := exec.Command(path, args...).Run(); err != nil { return fmt.Errorf("Windows no completó la configuración: %w", err) }
     return nil
