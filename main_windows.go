@@ -530,8 +530,13 @@ func message(s string, flags uintptr) uintptr {
 	r, _, _ := user32.NewProc("MessageBoxW").Call(0, ptr(s), ptr("BookTrigger"), flags)
 	return r
 }
+func engineDataDir() (string, error) {
+	if storeMode { return storeDataDir() }
+	return appDir()
+}
+
 func logError(err error) {
-	if d, e := appDir(); e == nil {
+	if d, e := engineDataDir(); e == nil {
 		if f, e := os.OpenFile(filepath.Join(d, "instalacion.log"), os.O_CREATE|os.O_APPEND|os.O_WRONLY, 0600); e == nil {
 			fmt.Fprintln(f, time.Now().Format(time.RFC3339), err)
 			f.Close()
@@ -539,7 +544,7 @@ func logError(err error) {
 	}
 }
 func runEngine(mode string, parent uintptr) error {
-	d, e := appDir()
+	d, e := engineDataDir()
 	if e != nil {
 		return e
 	}
@@ -614,6 +619,14 @@ func uninstall() error {
 func main() {
 	runtime.LockOSThread()
 	mode, parent := parseMode(os.Args[1:], strings.EqualFold(filepath.Ext(os.Args[0]), ".scr"))
+	if storeMode {
+		if err := storeMain(mode, parent); err != nil {
+			logError(err)
+			if mode != "preview" && mode != "saver" { message("No se pudo completar la operación.\n\n" + err.Error(), 0x10) }
+			os.Exit(1)
+		}
+		return
+	}
 	var err error
 	switch mode {
 	case "install":
