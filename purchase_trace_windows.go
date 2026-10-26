@@ -15,7 +15,7 @@ import (
 const saverVersion = "11.5"
 
 func purchaseTrace(event, detail string) {
-	root, err := appDir()
+	root, err := engineDataDir()
 	if err != nil {
 		return
 	}
