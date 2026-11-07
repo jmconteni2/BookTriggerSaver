@@ -4,6 +4,12 @@
 
 BookTriggerSaver muestra libros del catálogo de **BookTrigger**. Es una aplicación de **J.M. Contenidos**, distribuida también a través de **Microsoft Store**.
 
+### Literary bookshelf screensaver for Windows
+
+**BookTriggerSaver** is a free **literary screensaver for Windows 64-bit** featuring a virtual bookshelf, book cover artwork, rotating featured books and a moving clock. It brings a digital library to your screen when the computer is idle. The online book catalog updates automatically and previously loaded images remain available from a local cache.
+
+**Looking for a book screensaver, bookshelf screensaver or book-cover screensaver for Windows?** See the features below and find the installation options in the download section.
+
 ## Descargar
 
 **Opción recomendada: Microsoft Store.** Busca **BookTriggerSaver** en Microsoft Store para acceder a la ficha oficial, ver las imágenes y realizar la instalación desde la tienda. La versión distribuida a través de Microsoft Store utiliza el proceso de firma y distribución de Microsoft.
