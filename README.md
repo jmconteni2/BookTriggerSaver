@@ -2,13 +2,11 @@
 
 **Salvapantallas literario gratuito para Windows (64 bits).** Convierte los momentos de inactividad del ordenador en una biblioteca visual: estanterías oscuras, portadas de libros, obras destacadas, un reloj en movimiento y detalles vegetales.
 
-BookTriggerSaver muestra libros del catálogo de **BookTrigger**. Es una aplicación de **J.M. Contenidos**, distribuida también a través de **Microsoft Store**.
+BookTriggerSaver muestra libros en español del catálogo de **BookTrigger**. Es una aplicación de **J.M. Contenidos**, disponible en **Microsoft Store**.
 
-### Literary bookshelf screensaver for Windows
+## Salvapantallas de libros en español
 
-**BookTriggerSaver** is a free **literary screensaver for Windows 64-bit** featuring a virtual bookshelf, book cover artwork, rotating featured books and a moving clock. It brings a digital library to your screen when the computer is idle. The online book catalog updates automatically and previously loaded images remain available from a local cache.
-
-**Looking for a book screensaver, bookshelf screensaver or book-cover screensaver for Windows?** See the features below and find the installation options in the download section.
+Disfruta de una **biblioteca virtual en tu ordenador** mientras no lo utilizas. BookTriggerSaver es un salvapantallas gratuito para Windows con portadas de libros en español, estanterías, obras destacadas y un reloj animado. El catálogo se actualiza automáticamente y guarda las imágenes ya consultadas para poder mostrarlas después sin conexión.
 
 ## Descargar
 
@@ -39,6 +37,12 @@ Los archivos se guardan en `%APPDATA%\JMPocketSalvapantallas`. La instalación c
 Este repositorio contiene el código fuente. Para compilarlo en Windows con Go 1.27.3, ejecuta `./Build.ps1`. El script realiza pruebas, ejecuta `go vet` y genera `dist/BookTriggerSaver_v11_5.exe`. El programa instalado no requiere Go.
 
 [GitHub Actions](https://github.com/jmconteni2/BookTriggerSaver/actions) ejecuta pruebas automatizadas. La [compilación candidata v11.5](https://github.com/jmconteni2/BookTriggerSaver/actions/runs/39824074037) superó las pruebas documentadas; estos resultados no sustituyen pruebas en todos los equipos.
+
+## Apoya BookTriggerSaver
+
+Si te gusta este salvapantallas literario, puedes apoyar el proyecto pulsando **Star** (la estrella) en la parte superior de este repositorio. Tu apoyo ayuda a que otras personas descubran BookTriggerSaver.
+
+[![Estrellas del repositorio](https://img.shields.io/github/stars/jmconteni2/BookTriggerSaver?style=social)](https://github.com/jmconteni2/BookTriggerSaver/stargazers)
 
 ## Licencia y privacidad
 
