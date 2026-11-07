@@ -1,6 +1,6 @@
 # Descargar BookTriggerSaver
 
-**Recomendado: Microsoft Store.** Busca **BookTriggerSaver** en la tienda oficial de Windows. Allí encontrarás la presentación de la aplicación y la opción de instalar la versión distribuida a través de Microsoft Store.
+**Recomendado: [Descargar BookTriggerSaver en Microsoft Store](https://apps.microsoft.com/detail/9NBLC0ZVZ08P).** Allí encontrarás la ficha oficial, capturas del salvapantallas y la instalación desde la tienda de Windows.
 
 ## Compilación independiente de GitHub — v11.5
 
