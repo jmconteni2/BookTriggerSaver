@@ -1,33 +1,37 @@
 # BookTriggerSaver
 
-Salvapantallas gratuito y de código abierto para Windows x64 de J.M. Pocket. Muestra el catálogo de BookTrigger sobre estanterías oscuras, con portadas destacadas, reloj móvil y decoración vegetal.
+**Salvapantallas literario gratuito para Windows (64 bits).** Convierte los momentos de inactividad del ordenador en una biblioteca visual: estanterías oscuras, portadas de libros, obras destacadas, un reloj en movimiento y detalles vegetales.
 
-## Descargar e instalar
+BookTriggerSaver muestra libros del catálogo de **BookTrigger**. Es una aplicación de **J.M. Contenidos**, distribuida también a través de **Microsoft Store**.
 
-Consulta [Descarga v11.5](DOWNLOAD.md). El instalador actual está **sin firma Authenticode**; la solicitud a SignPath se envió el 22 de octubre de 2026 y está pendiente de evaluación.
+## Descargar
 
-Ejecuta `BookTriggerSaver_v11_5.exe`, elige el tiempo de inactividad y pulsa **Instalar y activar**. El botón **Ejecutar ahora** permite probarlo al terminar. La instalación configura el salvapantallas del usuario actual sin permisos de administrador.
+**Opción recomendada: Microsoft Store.** Busca **BookTriggerSaver** en Microsoft Store para acceder a la ficha oficial, ver las imágenes y realizar la instalación desde la tienda. La versión distribuida a través de Microsoft Store utiliza el proceso de firma y distribución de Microsoft.
 
-- Activación configurable: 1, 2, 3, 5, 10, 15 o 30 minutos.
-- Libro destacado durante 15 segundos, incluidos fundidos suaves de medio segundo.
-- Caja del reloj y logotipos en movimiento cada 30 segundos.
-- Intro abre el enlace del libro visible en el navegador predeterminado; las demás teclas cierran el salvapantallas.
-- Catálogo consultado cada dos minutos, con imágenes descargadas en segundo plano y caché local para trabajar sin conexión después de la primera sincronización.
+**Versión de GitHub:** [instrucciones de descarga](DOWNLOAD.md). Esta compilación independiente se distribuye sin firma Authenticode y Windows puede mostrar una advertencia de seguridad.
 
-Los archivos se instalan en `%APPDATA%\JMPocketSalvapantallas`. El instalador cambia la selección, activación y tiempo de espera del salvapantallas; guarda la configuración anterior. No cambia la contraseña ni la protección de bloqueo de Windows. Para quitarlo, usa **Aplicaciones instaladas > BookTriggerSaver > Desinstalar**. La desinstalación restaura los ajustes anteriores cuando corresponde y conserva la caché.
+## ¿Qué muestra el salvapantallas?
 
-## Compilación y verificación
+- Estanterías con portadas de libros del catálogo de BookTrigger.
+- Un libro destacado que cambia cada 15 segundos, con transiciones suaves.
+- Un reloj y elementos gráficos que cambian de posición periódicamente.
+- Acceso al libro visible mediante la tecla Intro, que abre su enlace en el navegador.
+- Actualización del catálogo cada dos minutos y caché local de imágenes para su posterior uso sin conexión.
 
-Con Go 1.27.3 en Windows, ejecuta `./Build.ps1`. El script ejecuta pruebas nativas y `go vet`, genera recursos con `go-winres` 0.3.3 y compila `dist/BookTriggerSaver_v11_5.exe`. La aplicación instalada no necesita Go ni dependencias adicionales. Las únicas bibliotecas de ejecución son la biblioteca estándar de Go y las de Windows.
+## Instalación y uso de la versión de GitHub
 
-[GitHub Actions](https://github.com/jmconteni2/BookTriggerSaver/actions) ejecuta pruebas portables con detector de carreras y pruebas nativas de Windows. La [compilación candidata v11.5](https://github.com/jmconteni2/BookTriggerSaver/actions/runs/39824074037) superó los 25 grupos de pruebas sin omisiones, incluidas las pruebas del Explorador, argumentos Unicode, enlace de la portada visible y dibujo GDI/GDI+. El responsable del proyecto ha comunicado que funciona correctamente en su última prueba y ha aprobado el diseño. Esto no sustituye pruebas en todos los equipos Windows.
+Ejecuta `BookTriggerSaver_v11_5.exe`, selecciona el tiempo de inactividad y pulsa **Instalar y activar**. Puedes probarlo con **Ejecutar ahora**.
 
-La apertura se delega una sola vez al Explorador de Windows existente, después de cerrar la ventana del salvapantallas. No usa el auxiliar ni la espera de escritorio de versiones anteriores. El registro local `apertura.log` incluye fases, dominio y hash, sin la URL completa ni sus parámetros.
+La activación puede configurarse en 1, 2, 3, 5, 10, 15 o 30 minutos. El programa se instala para el usuario actual, sin requerir permisos de administrador.
 
-## Code signing policy
+Los archivos se guardan en `%APPDATA%\JMPocketSalvapantallas`. La instalación conserva una copia de la configuración anterior del salvapantallas y no modifica la contraseña ni la protección de bloqueo de Windows. Para desinstalarlo, usa **Aplicaciones instaladas > BookTriggerSaver > Desinstalar**.
 
-Consulta la [política de firma y estado de la solicitud](SIGNPATH.md). Actualmente no existe firma ni patrocinio aprobado por SignPath Foundation.
+## Código fuente y verificación
+
+Este repositorio contiene el código fuente. Para compilarlo en Windows con Go 1.27.3, ejecuta `./Build.ps1`. El script realiza pruebas, ejecuta `go vet` y genera `dist/BookTriggerSaver_v11_5.exe`. El programa instalado no requiere Go.
+
+[GitHub Actions](https://github.com/jmconteni2/BookTriggerSaver/actions) ejecuta pruebas automatizadas. La [compilación candidata v11.5](https://github.com/jmconteni2/BookTriggerSaver/actions/runs/39824074037) superó las pruebas documentadas; estos resultados no sustituyen pruebas en todos los equipos.
 
 ## Licencia y privacidad
 
-Código y recursos propios distribuidos bajo [MIT](LICENSE), con las aclaraciones de [componentes y recursos](NOTICE.md). Las portadas obtenidas del catálogo pertenecen a sus respectivos titulares y no se incluyen en este repositorio. Consulta la [política de privacidad](PRIVACY.md).
+Código y recursos propios bajo [licencia MIT](LICENSE), con aclaraciones en [NOTICE.md](NOTICE.md). Las portadas obtenidas del catálogo pertenecen a sus respectivos titulares y no forman parte del repositorio. Consulta la [política de privacidad](PRIVACY.md).
