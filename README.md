@@ -14,7 +14,7 @@ BookTriggerSaver muestra libros del catálogo de **BookTrigger**. Es una aplicac
 
 **Opción recomendada: [Descargar BookTriggerSaver desde Microsoft Store](https://apps.microsoft.com/detail/9NBLC0ZVZ08P).** Consulta la ficha oficial, las capturas de pantalla y realiza la instalación desde la tienda de Windows. Esta versión se distribuye mediante el proceso oficial de firma y publicación de Microsoft.
 
-[![Disponible en Microsoft Store](https://get.microsoft.com/images/es-es%20dark.svg)](https://apps.microsoft.com/detail/9NBLC0ZVZ08P)
+**[VER EN MICROSOFT STORE · DESCARGA OFICIAL](https://apps.microsoft.com/detail/9NBLC0ZVZ08P)**
 
 **Versión de GitHub:** [instrucciones de descarga](DOWNLOAD.md). Esta compilación independiente se distribuye sin firma Authenticode y Windows puede mostrar una advertencia de seguridad.
 
