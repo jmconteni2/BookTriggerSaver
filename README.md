@@ -20,7 +20,7 @@ Disfruta de una **biblioteca virtual en tu ordenador** mientras no lo utilizas. 
 
 **[VER EN MICROSOFT STORE · DESCARGA OFICIAL](https://apps.microsoft.com/detail/9NBLC0ZVZ08P)**
 
-**Versión de GitHub:** [instrucciones de descarga](DOWNLOAD.md). Esta compilación independiente se distribuye sin firma Authenticode y Windows puede mostrar una advertencia de seguridad.
+**Versión alternativa de GitHub:** [descargar la versión beta v11.5 desde Releases](https://github.com/jmconteni2/BookTriggerSaver/releases/tag/v11.5). Consulta también las [instrucciones de descarga](DOWNLOAD.md).
 
 ## ¿Qué muestra el salvapantallas?
 
