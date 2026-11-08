@@ -8,6 +8,12 @@ BookTriggerSaver muestra libros en español del catálogo de **BookTrigger**. Es
 
 Disfruta de una **biblioteca virtual en tu ordenador** mientras no lo utilizas. BookTriggerSaver es un salvapantallas gratuito para Windows con portadas de libros en español, estanterías, obras destacadas y un reloj animado. El catálogo se actualiza automáticamente y guarda las imágenes ya consultadas para poder mostrarlas después sin conexión.
 
+## Imágenes del salvapantallas
+
+![BookTriggerSaver: presentación visual del salvapantallas literario](docs/images/img_1_1793248765696.jpg)
+
+![BookTriggerSaver: biblioteca virtual con portadas de libros en español](docs/images/apps.45260.13510874358595962.12751690-5c74-4b1d-a159-8dcac98ea092.jpeg)
+
 ## Descargar
 
 **Opción recomendada: [Descargar BookTriggerSaver desde Microsoft Store](https://apps.microsoft.com/detail/9NBLC0ZVZ08P).** Consulta la ficha oficial, las capturas de pantalla y realiza la instalación desde la tienda de Windows. Esta versión se distribuye mediante el proceso oficial de firma y publicación de Microsoft.
