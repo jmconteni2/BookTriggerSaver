@@ -59,6 +59,7 @@ func (s *saverWindow) tick() {
 		s.LastMinute = minute
 		changed = true
 	}
+	if captureWantsFrame(s) { changed = true }
 	if changed || s.Dirty || s.Scene.animating(now) {
 		user32.NewProc("InvalidateRect").Call(s.HWND, 0, 0)
 		s.Dirty = false
@@ -88,6 +89,14 @@ func saverWndProc(hwnd uintptr, msg uint32, wParam, lParam uintptr) uintptr {
 				if e != nil {
 					s.PaintError = e
 					user32.NewProc("PostMessageW").Call(hwnd, 0x10, 0, 0)
+				} else {
+					finished, captureErr := captureAfterPaint(s)
+					if captureErr != nil {
+						s.PaintError = captureErr
+						user32.NewProc("PostMessageW").Call(hwnd, 0x10, 0, 0)
+					} else if finished {
+						user32.NewProc("PostMessageW").Call(hwnd, 0x10, 0, 0)
+					}
 				}
 			}
 		}
