@@ -1,5 +1,7 @@
 # BookTriggerSaver
 
+**Tu biblioteca favorita, ahora también en tu salvapantallas.**
+
 **Salvapantallas literario gratuito para Windows (64 bits).** Convierte los momentos de inactividad del ordenador en una biblioteca visual: estanterías oscuras, portadas de libros, obras destacadas, un reloj en movimiento y detalles vegetales.
 
 BookTriggerSaver muestra libros en español del catálogo de **BookTrigger**. Es una aplicación de **J.M. Contenidos**, disponible en **Microsoft Store**.
